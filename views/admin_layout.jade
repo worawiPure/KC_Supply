@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title โปรแกรมความเสี่ยง verion 0.0.1
+    title OPD_service  verion 0.0.1
     meta(charset="utf-8")
     meta(http-equiv="X-UA-Compatible", content="IE=edge")
     meta(name="viewport", content="width=device-width, initial-scale=1")
@@ -10,6 +10,7 @@ html
     link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/material.min.css")
     link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/ripples.min.css")
     link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/roboto.min.css")
+    link(rel="stylesheet", href="/libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css")
     link(rel="stylesheet", href="/stylesheets/style.css")
     link(rel="stylesheet", href="/libs/nprogress/nprogress.css")
     script(src="/libs/jquery/dist/jquery.min.js")
@@ -19,7 +20,10 @@ html
     script(src="/libs/paging/jquery.paging.min.js")
     script(src="/libs/lodash/lodash.min.js")
     script(src="/libs/moment/moment.js")
+    script(src="/libs/moment/min/moment-with-locales.js")
+    script(src="/libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js")
     script(src="/libs/nprogress/nprogress.js")
+    script(src="/libs/js-xlsx/dist/xlsx.core.min.js")
     script(src="/javascripts/app.js")
 
     script.
@@ -27,153 +31,69 @@ html
             $('[data-toggle="tooltip"]').tooltip();
             $('input[readonly]').css('background-color', 'white');
             $('input[disabled="disabled"]').css('background-color', 'white');
+            $('[data-datepicker]').datetimepicker({
+                locale: 'th',
+                format: 'DD/MM/YYYY'
+            });
+            $('[data-timepicker]').datetimepicker({
+                format: 'HH:mm'
+            });
         })
-
     block scripts
-
   body
-    nav.navbar.navbar-success.navbar-fixed-top
-      .container
-        .navbar-header
-          button(type="button", data-toggle="collapse", data-taget="#navbar",
-          aria-expanded="false", aria-controls="navbar").navbar-toggle.collapsed
-            span.sr-only Toggle navigation
-            span.icon-bar
-            span.icon-bar
-          a.navbar-brand(href="#")
-            i.fa.fa-exclamation-triangle
-            | &nbsp; KC Risk
-        #navbar.navbar-collapse.collapse
-          ul.nav.navbar-nav
-            li.active
-              a(href="/abstract_risk") หน้าแรก
-            li.dropdown
-              a(href="#", data-toggle="dropdown", role="button",
-              aria-haspopup="true", aria-expanded="false").dropdown-toggle
-                | สรุปความเสี่ยง
-                span.caret
-              ul.dropdown-menu
-                li
-                  a(href="/abstract_risk")
-                    i.fa.fa-file-text-o
-                    |&nbsp;&nbsp; สรุปความเสี่ยง
-            li.dropdown
-              a(href="#", data-toggle="dropdown", role="button",
-              aria-haspopup="true", aria-expanded="false").dropdown-toggle
-                | รายงาน
-                span.caret
-              ul.dropdown-menu
-                li
-                  a(href="/report_risk")
-                    i.fa.fa-file
-                    | &nbsp;&nbsp;รายงานความเสี่ยงแยกประเภทคลีนิค
-                li
-                  a(href="/report_risk/level")
-                    i.fa.fa-file
-                    | &nbsp;&nbsp;รายงานความเสี่ยงแยกระดับความรุนแรง
-                li
-                  a(href="/report_risk/terminal")
-                    i.fa.fa-file
-                    | &nbsp;&nbsp;รายงานสรุปหัวข้อความเสี่ยงตามวันที่
-                li
-                  a(href="/report_risk/summary_date")
-                    i.fa.fa-file
-                    | &nbsp;&nbsp;รายงานความเสี่ยงสรุปยอดตามวันที่
-                li
-                  a(href="/report_risk/summary_department")
-                    i.fa.fa-file
-                    | &nbsp;&nbsp;รายงานความเสี่ยงสรุปยอดแบบเลือกแผนกที่เกิดความเสี่ยง
-          p.navbar-text.navbar-right #{session.fullname}
-          ul.nav.navbar-nav.pull-right
-            li.dropdown
-              a(href="#", data-toggle="dropdown", role="button",
-              aria-haspopup="true", aria-expanded="false").dropdown-toggle
-                i.fa.fa-user
-              ul.dropdown-menu
-                li
-                  a(href="/users/admin_profile")
-                    i.fa.fa-edit
-                      | &nbsp;&nbsp; ข้อมูลส่วนตัว
-                li
-                  a(href="/users/logout")
-                    i.fa.fa-power-off
-                    | &nbsp;&nbsp;ออกจากระบบ
-    .container
-      .row
-        .col-md-3
-          br
-          .panel.panel-default
-            .panel-body
-                .ul.nav.nav-pills.nav-stacked
-                      if session.level_user_id==2
-                          li.active
-                            a(href="#")
-                              i.fa.fa-fire
-                              | &nbsp; สรุปความเสี่ยง/รายงาน
-                          li
-                            a(href="/abstract_risk")
-                              i.fa.fa-file-text-o
-                              | &nbsp; สรุปความเสี่ยง
-                          li.dropdown
-                              a(href="#", data-toggle="dropdown", role="button",
-                              aria-haspopup="true", aria-expanded="false").dropdown-toggle
-                                  i.fa.fa-file-text-o
-                                  | &nbsp;&nbsp;รายงาน
-                              ul.dropdown-menu
-                                  li
-                                    a(href="/report_risk")
-                                        i.fa.fa-file
-                                        | &nbsp;&nbsp;รายงานความเสี่ยงแยกประเภทคลีนิค
-                                  li
-                                    a(href="/report_risk/level")
-                                        i.fa.fa-file
-                                        | &nbsp;&nbsp;รายงานความเสี่ยงแยกระดับความรุนแรง
-                                  li
-                                      a(href="/report_risk/terminal")
-                                          i.fa.fa-file
-                                          | &nbsp;&nbsp;รายงานสรุปหัวข้อความเสี่ยงตามวันที่
-                                  li
-                                    a(href="/report_risk/summary_date")
-                                        i.fa.fa-file
-                                        | &nbsp;&nbsp;รายงานความเสี่ยงสรุปยอดตามวันที่
-                                  li
-                                    a(href="/report_risk/summary_department")
-                                        i.fa.fa-file
-                                        | &nbsp;&nbsp;รายงานความเสี่ยงสรุปยอดแบบเลือกแผนกที่เกิดความเสี่ยง
-              #accordion.panel-group(role='tablist', aria-multiselectable='true')
-                .panel.panel-primary
-                    #headingOne.panel-heading(role='tab')
-                        // .ul.nav.nav-pills.nav-stacked
-                        if session.level_user_id==2
-                            li.active
-                                h4.panel-title
-                                    a(style="color:white", role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseOne', aria-expanded='true', aria-controls='collapseOne')
-                                        i.fa.fa-cogs
-                                        | &nbsp; จัดการระบบพื้นฐาน
-                    #collapseOne.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingOne')
-                        .panel-body
-                            .ul.nav.nav-pills.nav-stacked
+        nav.navbar.navbar-primary.navbar-fixed-top
+            .container
+                .navbar-header
+                    button(type="button", data-toggle="collapse", data-taget="#navbar",
+                    aria-expanded="false", aria-controls="navbar").navbar-toggle.collapsed
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                        span.icon-bar
+                    a.navbar-brand(href="/opd")
+                        i.fa.fa-spinner.fa-pulse.fa-2x.fa-fw
+                        | &nbsp; OPD Service
+                #navbar.navbar-collapse.collapse
+                    ul.nav.navbar-nav.pull-right
+                        .btn-group
+                            a.btn.btn-primary(href='#')
+                                i.fa.fa-user.fa-fw
+                                |  #{session.fullname}
+                            a.btn.btn-default.dropdown-toggle(data-toggle='dropdown', href='#')
+                                span.fa.fa-caret-down(title='Toggle dropdown menu')
+                            ul.dropdown-menu
+                                li
+                                    a(href='/users/admin_profile')
+                                        i.fa.fa-pencil.fa-fw
+                                        |  ข้อมูลส่วนตัว
+                                li
+                                    a(href='/users/logout')
+                                        i.fa.fa-power-off.fa-fw
+                                        |  ออกจากระบบ
+        .container
+            .row
+                .col-md-2
+                    br
+                    #accordion.panel-group(role='tablist', aria-multiselectable='true')
+                        .panel.panel-primary
+                            #headingOne.panel-heading(role='tab')
+                                // .ul.nav.nav-pills.nav-stacked
                                 if session.level_user_id==2
-                                    li
-                                        a(href="/program/risk_program")
-                                            i.fa.fa-cog
-                                            | &nbsp; โปรแกรมความเสี่ยง
-                                    li
-                                        a(href="/program/risk_group")
-                                            i.fa.fa-cog
-                                            | &nbsp; หมวดหมู่ อุบัติการณ์/ความเสี่ยง
-                                    li
-                                        a(href="/detail/risk_group_detail")
-                                            i.fa.fa-cog
-                                            | &nbsp;อุบัติการณ์/ความเสี่ยง
-                                    li
-                                        a(href="/users/user")
-                                            i.fa.fa-users
-                                            | &nbsp; จัดการผู้ใช้งาน
-                                    li
-                                        a(href="/users/department")
-                                            i.fa.fa-users
-                                            | &nbsp; จัดการแผนก
-
-        .col-md-9
-          block content
+                                    li.active
+                                        h4.panel-title
+                                            a(style="color:white", role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseOne', aria-expanded='true', aria-controls='collapseOne')
+                                                i.fa.fa-download
+                                                | &nbsp; ส่งออกข้อมูล
+                            #collapseOne.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingOne')
+                                .panel-body
+                                    .ul.nav.nav-pills.nav-stacked
+                                        if session.level_user_id==2
+                                            li
+                                                a(href="#")#send_block_report_normal
+                                                    i.fa.fa-user-md
+                                                    | &nbsp; ตรวจทั่วไป
+                                            li
+                                                a(href="#")#send_block_report_special
+                                                    i.fa.fa-user-md
+                                                    | &nbsp; ตรวจพิเศษ
+                .col-md-9
+                    block content

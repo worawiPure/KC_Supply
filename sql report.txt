@@ -1,0 +1,9 @@
+SELECT vstdate,hn,TIMEDIFF(finish_card,vsttime_card) as "ห้องบัตร" ,TIMEDIFF(vsttime_screen,finish_card) as "รอซักประวัติ" ,
+TIMEDIFF(finish_screen,vsttime_screen) as "ซักประวัติ" ,TIMEDIFF(vsttime_doctor,finish_screen) as "รอตรวจ", 
+TIMEDIFF(finish_doctor,vsttime_doctor) as "ตรวจเฉพาะ OPD" ,TIMEDIFF(finish_lab,vsttime_lab) as "ห้อง lab",
+TIMEDIFF(finish_xray,vsttime_xray) as "ห้อง Xray", TIMEDIFF(finish_ekg,vsttime_ekg) as "ห้อง ekg",
+TIMEDIFF(finish_other,vsttime_other) as "อื่นๆ",TIMEDIFF(finish_appointment,vsttime_appointment) as "ให้คำแนะนำ", TIMEDIFF(finish_drugs,vsttime_appointment) as "รับยา",
+TIMEDIFF(finish_appointment,finish_card) as "รอคอยซักประวัติ ถึง ให้คำแนะนะหฃังตรวจ",TIMEDIFF(finish_drugs,vsttime_card) as "ทำบัตร - รับยากลับบ้าน"
+FROM service_time
+WHERE vstdate BETWEEN "2016-06-01" AND "2016-06-30"
+AND treatment_type = "2"

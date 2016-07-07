@@ -204,7 +204,7 @@ router.post('/report_summary_date',function(req,res){
             console.log(err);
             res.send({ok:false,msg:err})
         })
-
+    //var dateRisk = moment(rows[0].date_risk).format('DD/MM/YYYY')
 });
 
 router.post('/report_summary_department',function(req,res){

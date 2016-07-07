@@ -123,7 +123,8 @@ router.post('/save_abstract',function(req,res){
 router.post('/search_date_risk',function(req,res){
     var db = req.db;
     var data = {};
-    data.date = req.body.date;
+    data.date1 = req.body.date1;
+    data.date2 = req.body.date2;
     console.log(data);
     abstract.search_date(db,data)
         .then(function(rows){

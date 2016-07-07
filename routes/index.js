@@ -1,598 +1,59 @@
 var express = require('express');
 var _ = require('lodash');
 var moment = require('moment');
+var json2xls = require('json2xls');
 var router = express.Router();
-var department = require('../models/department');
-var depcode = require('../models/department');
-var program = require('../models/risk_group');
-var sub_progarm = require('../models/risk_group');
-var sub_group = require('../models/risk_group');
-var detail = require('../models/risk_detail');
-var risk_type = require('../models/risk_type');
-var risk_report = require('../models/risk_type');
-var type_complaint = require('../models/risk_type');
-var clinic = require('../models/risk_type');
-var request = require('../models/request');
-var show_risk = require('../models/risk_report');
-var show_risk2 = require('../models/risk_report');
-var risk_repeat = require('../models/risk_report');
-var update_part1 = require('../models/risk_report');
-var update_part2 = require('../models/risk_report');
 var level_user = require('../models/users');
+var show = require('../models/type_service');
+var save = require('../models/type_service');
+var edit = require('../models/type_service');
+var remove = require('../models/type_service');
+var fs = require('fs');
+var fse = require('fs-extra');
+var path = require('path');
+var lodash = require('lodash');
 
 /* GET home page. */
 
-router.get('/', function(req, res, next) {
-    if (req.session.level_user_id != 1) {
-        res.render('./page/access_denied')
-    }else{
-  res.render('index');}
-});
-
-router.get('/user_senior', function(req, res, next) {
-    if (req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    }else{
-        res.render('user_senior');}
-});
-
-
 router.get('/admin', function(req, res, next) {
-        if (req.session.level_user_id != 2 && req.session.level_user_id != 3){
-                res.render('./page/access_denied')
-            }else{
-    res.render('admin');}
-});
-
-router.get('/superadmin', function(req, res, next) {
-    if (req.session.level_user_id != 3){
+    if (req.session.level_user_id != 2 && req.session.level_user_id != 3){
         res.render('./page/access_denied')
     }else{
-    res.render('superadmin');}
+        res.render('admin');}
 });
 
-router.get('/request_detail_save', function(req, res, next) {
-    res.render('page/request_detail_save');
-});
-
-router.get('/risk_report', function(req, res, next) {
-    if (req.session.level_user_id != 1){
-        res.render('./page/access_denied')
-    }else{
-    res.render('page/risk_report');}
-});
-
-router.get('/user_senior_risk_report', function(req, res, next) {
-    if (req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    }else{
-    res.render('page/user_senior_risk_report');}
-});
-
-router.get('/user_senior_risk_report_feedback', function(req, res, next) {
-    if (req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    }else{
-        res.render('page/user_senior_risk_report_feedback');}
-});
-
-router.post('/get_risk_report' ,function(req,res) {
-    var db = req.db;
-    var username = req.session.username;
-    var startpage  = parseInt(req.body.startRecord);
-    show_risk.getSubAllDetail(db,username,startpage)
-        .then(function(rows) {
-            res.send({ok:true,rows:rows})
-        },function(err){
-            res.send({ok:false,msg:err})
-        }
-    )
-});
-
-router.post('/get_risk_report_total' ,function(req,res) {
-    var db = req.db;
-    var username = req.session.username;
-    show_risk.getSubAllDetail_total(db,username)
-        .then(function(total) {
-            res.send({ok:true,total:total})
-        },function(err){
-            res.send({ok:false,msg:err})
-        }
-    )
-});
-
-router.post('/user_senior_get_risk_report' ,function(req,res) {
-    var db = req.db;
-    var depcode = req.session.depcode;
-    var startpage = parseInt(req.body.startRecord);
-    console.log(depcode)
-    show_risk.getSubAllDetail_user_senior(db,req.session.depcode,startpage)
-        .then(function(rows) {
-            res.send({ok:true,rows:rows})
-        },function(err){
-            res.send({ok:false,msg:err})
-        }
-    )
-});
-
-router.post('/user_senior_get_risk_report_total' ,function(req,res) {
-    var db = req.db;
-    var depcode = req.session.depcode;
-    console.log(depcode)
-    show_risk.getSubAllDetail_user_senior_total(db,req.session.depcode)
-        .then(function(total) {
-            res.send({ok:true,total:total})
-        },function(err){
-            res.send({ok:false,msg:err})
-        }
-    )
-});
-
-router.post('/user_senior_get_risk_feedback_report' ,function(req,res) {
-    var db = req.db;
-    var depcode = req.session.depcode;
-    var sub_depcode = req.session.sub_depcode;
-    var startpage = parseInt(req.body.startRecord);
-    console.log(depcode,sub_depcode)
-    show_risk.getSubAllDetail_user_senior_feedback(db,req.session.depcode,req.session.sub_depcode,startpage)
-        .then(function(rows) {
-            res.send({ok:true,rows:rows})
-        },function(err){
-            res.send({ok:false,msg:err})
-        }
-    )
-});
-
-router.post('/user_senior_get_risk_report_feedback_total' ,function(req,res) {
-    var db = req.db;
-    var depcode = req.session.depcode;
-    var sub_depcode = req.session.sub_depcode;
-    console.log(depcode,sub_depcode)
-    show_risk.getSubAllDetail_user_senior_feedback_total(db,req.session.depcode,req.session.sub_depcode)
-        .then(function(total) {
-            res.send({ok:true,total:total})
-        },function(err){
-            res.send({ok:false,msg:err})
-        }
-    )
-});
-
-
-router.get('/show_risk/:id',function(req,res){
-    if (req.session.level_user_id != 1){
-        res.render('./page/access_denied')
-    }else {
-        var db = req.db;
-        var id = req.params.id;
-        show_risk2.Chack_sesion(db, id, req.session.username)
-            .then(function (total) {
-                if (total > 0) {
-                    show_risk2.getSubShowDetail(db, id)
-                        .then(function (rows) {
-                            var data = rows[0];
-                            data.date_risk = moment(data.date_risk).format('DD/MM/YYYY');
-                            data.date_report_risk = moment(data.date_report_risk).format('DD/MM/YYYY');
-                            data.date_repeat = moment(data.date_repeat).format('DD/MM/YYYY');
-                            data.date_finished = moment(data.date_finished).format('DD/MM/YYYY');
-                            res.render('page/show_detail', {rows: data});
-                        }, function (err) {
-                            res.send({ok: false, msg: err})
-                        }
-                    )
-                }
-                else {
-                    res.render('./page/access_denied')
-                }
-            })
-    }
-});
-
-router.get('/user_senior_show_risk/:id/:cc',function(req,res){
-    if (req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    }else {
-        var db = req.db;
-        var id = req.params.id;
-        var cc = req.params.depcode;
-                    show_risk2.getSubShowDetail(db,id)
-                        .then(function (rows) {
-                            var data = rows[0];
-                            data.date_risk = moment(data.date_risk).format('DD/MM/YYYY');
-                            data.date_report_risk = moment(data.date_report_risk).format('DD/MM/YYYY');
-                            data.date_repeat = moment(data.date_repeat).format('DD/MM/YYYY');
-                            data.date_finished = moment(data.date_finished).format('DD/MM/YYYY');
-                            res.render('page/user_senior_show_detail', {rows: data});
-                        }, function (err) {
-                            res.send({ok: false, msg: err})
-                        })
-                }
-});
-
-router.get('/user_senior_show_risk_feedback/:id',function(req,res){
-    if (req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    }else {
-        var db = req.db;
-        var id = req.params.id;
-        show_risk2.getSubShowDetail(db,id)
-            .then(function (rows) {
-                var data = rows[0];
-                data.date_risk = moment(data.date_risk).format('DD/MM/YYYY');
-                            data.date_report_risk = moment(data.date_report_risk).format('DD/MM/YYYY');
-                            data.date_repeat = moment(data.date_repeat).format('DD/MM/YYYY');
-                            data.date_finished = moment(data.date_finished).format('DD/MM/YYYY');
-                            res.render('page/user_senior_show_detail_feedback', {rows: data});
-                        }, function (err) {
-                            res.send({ok: false, msg: err})
-                        })
-    }
-});
-
-router.get('/risk_repeat/:id/:depcode',function(req,res){
-    if (req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    }else {
-        var db = req.db;
-        var id = req.params.id;
-        risk_repeat.getSubShowPast5(db, id)
-            .then(function (rows) {
-                var data = rows[0];
-                res.render('page/risk_repeat', {rows: data, risk_id: id});
-            }, function (err) {
-                res.send({ok: false, msg: err})
-            })
-    }
-});
-
-
-router.post('/update_part5', function(req,res) {
-    if (req.session.level_user_id != 1 && req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    }else {
-        var db = req.db;
-        var data = req.body.data;
-        console.log(data.id);
-        update_part1.Update_part1(db, data.id)
-            .then(function () {
-                return update_part2.Update_part5(db, data)
-            })
-            .then(function () {
-                res.send({ok: true});
-            },
-            function (err) {
-                res.send({ok: false, msg: err})
-            })
-    }
-});
-
-router.get('/request', function(req,res){
-    var db = req.db;
-    var data = {};
-    if (req.session.level_user_id != 1){
+router.get('/opd', function(req, res, next) {
+    if (req.session.level_user_id != 2){
         res.render('./page/access_denied')
     } else {
-        depcode.getList_Department(db,req.session.depcode)
+        var db =req.db;
+        var data = {};
+        show.getList_Type_service(db)
             .then(function(rows){
-                data.depcodes = rows;
-                return  department.getList(db);
-            })
-            .then(function (rows) {
-                data.departments = rows;
-                return program.getList(db);
-            })
-            .then(function (rows) {
                 console.log(rows);
-                data.programs = rows;
-                return risk_type.getRisk_type(db);
+                data.types = rows;
+                return show.getList_Type_treatment(db)
             })
-            .then(function (rows) {
+            .then(function(rows){
                 console.log(rows);
-                data.risk_types = rows;
-                return risk_report.getType_report(db);
-            })
-            .then(function (rows) {
-                console.log(rows);
-                data.risk_reports = rows;
-                return type_complaint.getType_complaint(db);
-            })
-            .then(function (rows) {
-                console.log(rows);
-                data.type_complaints = rows;
-                return risk_type.getRisk_type(db);
-            })
-            .then(function (rows) {
-                console.log(rows);
-                data.clinics = rows;
-                res.render('page/request', {data: data});
-            }, function (err) {
+                data.treatments =rows;
+                res.render('page/opd',{data:data});
+            },function(err){
                 console.log(err);
-                res.render('page/request', {
-                    data: {
-                        programs: [], depratments: [], risk_types: [], risk_reports: []
-                        , type_complaints: [], clinics: [],depcodes: []
-                    }
+                res.render('page/opd',{
+                    data:{types:[],trestments:[]}
                 });
             });
-    }
-});router.get('/user_senior_request', function(req,res){
-    var db = req.db;
-    var data = {};
-    if (req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    } else {
-        depcode.getList_Department(db,req.session.depcode)
-            .then(function(rows){
-                data.depcodes = rows;
-                return  department.getList(db);
-            })
-            .then(function (rows) {
-                data.departments = rows;
-                return program.getList(db);
-            })
-            .then(function (rows) {
-                console.log(rows);
-                data.programs = rows;
-                return risk_type.getRisk_type(db);
-            })
-            .then(function (rows) {
-                console.log(rows);
-                data.risk_types = rows;
-                return risk_report.getType_report(db);
-            })
-            .then(function (rows) {
-                console.log(rows);
-                data.risk_reports = rows;
-                return type_complaint.getType_complaint(db);
-            })
-            .then(function (rows) {
-                console.log(rows);
-                data.type_complaints = rows;
-                return risk_type.getRisk_type(db);
-            })
-            .then(function (rows) {
-                console.log(rows);
-                data.clinics = rows;
-                res.render('page/user_senior_request', {data: data});
-            }, function (err) {
-                console.log(err);
-                res.render('page/user_senior_request', {
-                    data: {
-                        programs: [], depratments: [], risk_types: [], risk_reports: []
-                        , type_complaints: [], clinics: [],depcodes: []
-                    }
-                });
-            });
-    }
-});
+    }});
 
-router.get('/edit_risk/:id', function(req,res){
-    if (req.session.level_user_id != 1){
-        res.render('./page/access_denied')
-    }else {
-        var db = req.db;
-        var id = req.params.id;
-        var data = {};
-        show_risk2.Chack_sesion(db,id,req.session.username)
-            .then(function(total){
-                if(total > 0){
-                    show_risk2.getSubShowDetail(db, id)
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.detail = rows[0];
-                            data.detail.date_risk = moment(data.detail.date_risk).format('YYYY-MM-DD');
-                            data.detail.date_report_risk = moment(data.detail.date_report_risk).format('YYYY-MM-DD');
-                            return department.getList(db)
-                        })
-                        .then(function (rows) {
-                            data.departments = rows;
-                            return depcode.getList_Department(db,req.session.depcode)
-                        })
-                        .then(function (rows) {
-                            data.depcodes = rows;
-                            return program.getList(db);
-                        })
-                        .then(function (rows) {
-                            data.programs = rows;
-                            return sub_progarm.getSubList2(db, data.detail.risk_program);
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.sub_programs = rows;
-                            return sub_group.getSubList3(db, data.detail.risk_group);
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.sub_groups = rows;
-                            return risk_type.getRisk_type(db);
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.risk_types = rows;
-                            return risk_report.getType_report(db)
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.risk_reports = rows;
-                            return type_complaint.getType_complaint(db);
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.type_complaints = rows;
-                            return clinic.getClinicLevel(db, data.detail.type_risk);
-                        })
-                        .then(function (rows) {
-                            console.log(data);
-                            data.clinics = rows;
-                            res.render('page/edit_risk', {data: data});
-                        }, function (err) {
-                            console.log(err);
-                            res.render('page/edit_risk', {
-                                data: {
-                                    programs: [],
-                                    sub_programs: [],
-                                    sub_groups: [],
-                                    depratments: [],
-                                    depcodes: [],
-                                    risk_types: [],
-                                    risk_reports: [],
-                                    type_complaints: [],
-                                    clinics: [],
-                                    show_risk2: []
-                                }
-                            });
-                        });
-                }else{
-                    res.render('./page/access_denied')
-                }
-            })
-
-    }
-});
-
-router.get('/user_senior_edit_risk/:id/:cc', function(req,res){
-    if (req.session.level_user_id != 4){
-        res.render('./page/access_denied')
-    }else {
-        var db = req.db;
-        var id = req.params.id;
-        var data = {};
-                    show_risk2.getSubShowDetail(db,id)
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.detail = rows[0];
-                            data.detail.date_risk = moment(data.detail.date_risk).format('YYYY-MM-DD');
-                            data.detail.date_report_risk = moment(data.detail.date_report_risk).format('YYYY-MM-DD');
-                            return department.getList(db)
-                        })
-                        .then(function (rows) {
-                            data.departments = rows;
-                            return depcode.getList_Department(db,req.session.depcode)
-                        })
-                        .then(function (rows) {
-                            data.depcodes = rows;
-                            return program.getList(db);
-                        })
-                        .then(function (rows) {
-                            data.programs = rows;
-                            return sub_progarm.getSubList2(db, data.detail.risk_program);
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.sub_programs = rows;
-                            return sub_group.getSubList3(db, data.detail.risk_group);
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.sub_groups = rows;
-                            return risk_type.getRisk_type(db);
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.risk_types = rows;
-                            return risk_report.getType_report(db)
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.risk_reports = rows;
-                            return type_complaint.getType_complaint(db);
-                        })
-                        .then(function (rows) {
-                            console.log(rows);
-                            data.type_complaints = rows;
-                            return clinic.getClinicLevel(db, data.detail.type_risk);
-                        })
-                        .then(function (rows) {
-                            console.log(data);
-                            data.clinics = rows;
-                            res.render('page/user_senior_edit_risk', {data: data});
-                        }, function (err) {
-                            console.log(err);
-                            res.render('page/user_senior_edit_risk', {
-                                data: {
-                                    programs: [],
-                                    sub_programs: [],
-                                    sub_groups: [],
-                                    depratments: [], depcodes: [],
-                                    risk_types: [],
-                                    risk_reports: [],
-                                    type_complaints: [],
-                                    clinics: [],
-                                    show_risk2: []
-                                }
-                            });
-                        });
-
-    }
-});
-
-router.post('/sub_program',function(req,res){
-  var id = req.body.id;
-  var db = req.db;
-  program.getSubList(db,id)
-   .then(function(rows){
-    res.send({ok:true,rows:rows});
-  },
-   function(err){
-     res.send({ok:false,msg:err})
-  })
-});
-
-router.post('/sub_group',function(req,res){
-    var id = req.body.id;
-    var db = req.db;
-    detail.getSubDetail(db,id)
-        .then(function(rows){
-            res.send({ok:true,rows:rows});
-        },
-        function(err){
-            res.send({ok:false,msg:err})
-        })
-});
-
-router.post('/sub_group2',function(req,res){
-    var id = req.body.id;
-    var db = req.db;
-    detail.getSubDetail2(db,id)
-        .then(function(rows){
-            res.send({ok:true,rows:rows});
-        },
-        function(err){
-            res.send({ok:false,msg:err})
-        })
-});
-
-router.post('/clinic',function(req,res){
-    var id = req.body.id;
-    var db = req.db;
-    clinic.getClinicLevel(db,id)
-        .then(function(rows){
-            res.send({ok:true,rows:rows});
-        },
-        function(err){
-            res.send({ok:false,msg:err})
-        })
-});
-
-router.post('/save_request', function(req,res){
+router.post('/save_service', function(req,res){
     var db = req.db;
     var data = req.body.data;
-    data.username = req.session.username;
+    data.service_date=moment(data.service_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
     if(data){
-        request.Save_part1(db,data)
-            .then(function(id){
-                data.id = id;
-                return request.Save_part2(db,data)
-            })
-            .then(function(){
-                return request.Save_part3(db,data)
-            })
-            .then(function(){
-                return request.Save_part4(db,data)
-            })
-            .then(function(){
-                return request.Save_part5(db,data)
-            })
-            .then(function () {
+        console.log(data);
+        save.Save_service_time(db,data)
+            .then(function() {
                 res.send({ok: true});
             },
             function(err){
@@ -603,31 +64,49 @@ router.post('/save_request', function(req,res){
     }
 });
 
-router.post('/edit_request', function(req,res){
+router.post('/search_date_opd',function(req,res){
+    var db = req.db;
+    var data = {};
+    data.date1 = req.body.date1;
+    data.date2 = req.body.date2;
+    data.date1=moment(data.date1, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    data.date2=moment(data.date2, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    console.log(data);
+    show.search_date(db,data)
+        .then(function(rows){
+            console.log(rows);
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+});
+
+router.post('/edit_opd', function(req,res){
     var db = req.db;
     var data = req.body.data;
-    //data.username = req.session.username;
-    if(data){
-        request.update_part1(db,data)
+    data.service_date=moment(data.service_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        if(data){
+            edit.update_opd(db,data)
+                .then(function(){
+                    res.send({ok:true})
+                },function(err){
+                    res.send({ok:false,msg:err})
+                })
+        } else {
+            res.send({ok:false,msg:'ข้อมูลไม่สมบูรณ์'})
+        }
+});
+
+router.post('/remove_opd',function(req,res){
+    var db = req.db;
+    var id = req.body.id;
+    if(id){
+        remove.remove_opd(db,id)
             .then(function(){
-                console.log(data);
-                console.log(data.program);
-                console.log(data.subprogram);
-                console.log(data.subgroup);
-                console.log(data.sentinel);
-                return request.update_part2(db,data)
-            })
-            .then(function(){
-                return request.update_part3(db,data)
-            })
-            .then(function(){
-                return request.update_part4(db,data)
-            })
-            .then(function () {
-                res.send({ok: true});
-            },
-            function(err){
-                console.log(err);
+                res.send({ok:true})
+            },function(err){
                 res.send({ok:false,msg:err})
             })
     } else {
@@ -635,163 +114,122 @@ router.post('/edit_request', function(req,res){
     }
 });
 
-
-router.get('/risk_group_sub',function(req,res){
+router.post('/get_opd_total' ,function(req,res) {
     var db = req.db;
     var data = {};
-    program.getList(db)
-        .then(function(rows){
-            data.programs = rows;
-            return group.getList(db);
-        })
+    data.date1 = req.body.date1;
+    data.date2 = req.body.date2;
+    console.log(data);
+    show.getOPD_total(db,data)
+        .then(function(total) {
+            res.send({ok:true,total:total})
+        },function(err){
+            res.send({ok:false,msg:err})
+        }
+    )
+});
+
+router.post('/get_opd_show',function(req, res){
+    var db = req.db;
+    var date_search1 = parseInt(req.body.date_search1);
+    var date_search2 = parseInt(req.body.date_search2);
+    var startpage = parseInt(req.body.startRecord);
+    show.getOPD_page(db,date_search1,date_search2,startpage)
         .then(function(rows){
             console.log(rows);
-            data.programs = rows;
-            res.render('page/risk_group_sub',{data:data});
+            res.send({ok:true,rows:rows})
+        },function(err){
+            res.send({ok:false,msg:err})
+        }
+    )
+});
+
+router.get('/export_report_normal/:start/:end/:number_row',function(req, res){
+    var db = req.db;
+    var data = {};
+    var json = {};
+    data.date_report_normal1 = req.params.start;
+    data.date_report_normal2 = req.params.end;
+    data.number_row = req.params.number_row;
+    //data.date_report_normal1=moment(data.date_report_normal1, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    //data.date_report_normal2=moment(data.date_report_normal2, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    show.export_normal(db,data)
+        .then(function(rows){
+        if (rows.length > 0 ){
+        json = _.sampleSize(rows,[data.number_row])
+            //console.log(rows);
+            //json = rows[;
+            //var xls = json2xls(rows);
+            var exportPath = './templates/xls';
+            fse.ensureDirSync(exportPath);
+            var exportFile = path.join(exportPath, 'risk-' + moment().format('x') + '.xls');
+            //fs.writeFile(exportFile, xls, 'binary');
+            var json2xls = require('json2xls');
+            //var json = {
+            //    foo: 'bar',
+            //    qux: 'moo',
+            //    poo: 123,
+            //    stux: new Date()
+            //};
+            //
+            //console.log(json);
+            var xls = json2xls(json);
+            fs.writeFileSync(exportFile, xls, 'binary');
+            res.download(exportFile, function () {
+                //rimraf.sync(export);
+                fse.removeSync(exportFile);
+            });
+        } else {
+            res.send({ok:false,msg:'ไม่มีข้อมูลในช่วงที่เลือกครับ'})
+        }
         },function(err){
             console.log(err);
-            res.render('page/risk_group_sub',{data:{programs:[],group:[]}});
-        });
-});
-
-router.post('/search_date_risk',function(req,res){
-    var db = req.db;
-    var data = {};
-    data.date = req.body.date;
-    data.username = req.session.username;
-
-    console.log(data);
-    request.search_date(db,data)
-        .then(function(rows){
-            console.log(rows);
-                    res.send({ok: true,rows:rows});
-                },
-                function(err){
-                    console.log(err);
-                    res.send({ok:false,msg:err})
-                })
-
-});
-
-router.post('/user_senior_search_date_risk',function(req,res){
-    var db = req.db;
-    var data = {};
-    data.date = req.body.date;
-    data.depcode = req.session.depcode;
-
-    console.log(data);
-    request.user_senior_search_date(db,data)
-        .then(function(rows){
-            console.log(rows);
-                    res.send({ok: true,rows:rows});
-                },
-                function(err){
-                    console.log(err);
-                    res.send({ok:false,msg:err})
-                })
-});
-
-router.post('/user_senior_search_date_risk_feedback',function(req,res){
-    var db = req.db;
-    var data = {};
-    data.date = req.body.date;
-    data.depcode = req.session.depcode;
-    data.sub_depcode = req.session.sub_depcode;
-    console.log(data);
-    request.user_senior_search_date_feedback(db,data)
-        .then(function(rows){
-            console.log(rows);
-            res.send({ok: true,rows:rows});
-        },
-        function(err){
-            console.log(err);
             res.send({ok:false,msg:err})
         })
 });
 
-router.post('/search_topic_risk',function(req,res){
+router.get('/export_report_special/:start/:end/:number_row2',function(req, res){
     var db = req.db;
     var data = {};
-    data.topic = req.body.topic;
-    data.username = req.session.username;
-
-    console.log(data);
-    request.search_topic(db,data)
+    var json = {};
+    data.date_report_special1 = req.params.start;
+    data.date_report_special2 = req.params.end;
+    data.number_row2 = req.params.number_row2;
+    //data.date_report_special1=moment(data.date_report_special1, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    //data.date_report_special2=moment(data.date_report_special2, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    show.export_special(db,data)
         .then(function(rows){
-            console.log(rows);
-            res.send({ok: true,rows:rows});
-        },
-        function(err){
+            if (rows.length > 0 ) {
+                json = _.sampleSize(rows, [data.number_row2])
+                //console.log(rows);
+                //json = rows[;
+                //var xls = json2xls(rows);
+                var exportPath = './templates/xls';
+                fse.ensureDirSync(exportPath);
+                var exportFile = path.join(exportPath, 'risk-' + moment().format('x') + '.xls');
+                //fs.writeFile(exportFile, xls, 'binary');
+                var json2xls = require('json2xls');
+                //var json = {
+                //    foo: 'bar',
+                //    qux: 'moo',
+                //    poo: 123,
+                //    stux: new Date()
+                //};
+                //
+                //console.log(json);
+                var xls = json2xls(json);
+                fs.writeFileSync(exportFile, xls, 'binary');
+                res.download(exportFile, function () {
+                    //rimraf.sync(export);
+                    fse.removeSync(exportFile);
+                });
+            } else {
+                res.send({ok:false,msg:'ไม่มีข้อมูลในช่วงที่เลือกครับ'})
+            }
+            },function(err){
             console.log(err);
             res.send({ok:false,msg:err})
-        })
-
+            })
 });
 
-router.post('/user_senior_search_topic_risk',function(req,res){
-    var db = req.db;
-    var data = {};
-    data.topic = req.body.topic;
-    data.depcode = req.session.depcode;
-
-    console.log(data);
-    request.user_senior_search_topic(db,data)
-        .then(function(rows){
-            console.log(rows);
-            res.send({ok: true,rows:rows});
-        },
-        function(err){
-            console.log(err);
-            res.send({ok:false,msg:err})
-        })
-
-});
-
-router.post('/user_senior_search_topic_risk_feedback',function(req,res){
-    var db = req.db;
-    var data = {};
-    data.topic = req.body.topic;
-    data.depcode = req.session.depcode;
-    data.sub_depcode = req.session.sub_depcode;
-    console.log(data);
-    request.user_senior_search_topic_feedback(db,data)
-        .then(function(rows){
-            console.log(rows);
-            res.send({ok: true,rows:rows});
-        },
-        function(err){
-            console.log(err);
-            res.send({ok:false,msg:err})
-        })
-
-});
-
-
-
-router.get('/hello/:fname/:lname/:age', function (req,res) {
-  var data = req.params;
-  res.render('page/main',{
-    fname:data.fname,
-    lname:data.lname,
-    age:data.age
-  });
-});
-
-router.get('/about', function(reg, res){
-  var  fruits = [1,2,3,4];
-  var animal = [{id:1 , name: 'cat'},
-    {id:2,name:'bat'},
-    {id:3,name:'rat'}];
-  var person = [{id:1 ,name:'worawit'},
-    {id:2,name:'somsri'},
-    {id:3,name:'somchai'}];
-  res.render('page/about',{msg:'เกี่ยวกับผู้จัดทำ',fruits:fruits,animal:animal,person:person});
-});
-
-router.get('/contact',function(req,res){
-  var tel = [{id:1,moo:'1',tumb:'โคกพระ',post:'44150'},
-    {id:2,moo:'9',tumb:'คันธาร์',post:'44151'},
-    {id:3,moo:'4',tumb:'โคกพระ',post:'44152'}];
-  res.render('page/contact',{tel:tel});
-});
 module.exports = router;

@@ -1,8 +1,8 @@
+var moment = require('moment');
 var express = require('express');
 var router = express.Router();
 var crypto = require('crypto');
 var department = require('../models/department');
-var program = require('../models/risk_group');
 var user = require('../models/users');
 var layer = require('../models/level_user');
 var pname = require('../models/users');
@@ -377,7 +377,7 @@ router.post('/login',function(req,res){
   var password = req.body.password;
   var encryptPass = crypto.createHash('md5').update(password).digest('hex');
   var db=req.db;
-  db('risk_user as u')
+  db('user_opd as u')
       .select()
       .join('department as d','d.depcode','u.depcode')
       .where({user:username, password:encryptPass, comfirm: 'Y'})
@@ -391,11 +391,11 @@ router.post('/login',function(req,res){
         req.session.sub_depcode=rows[0].sub_depcode;
         req.session.fullname=rows[0].fname + ' ' + rows[0].lname;
         req.session.depname=rows[0].depname;
-
+        req.session.date_now=moment().format("DD-MM-YYYY");
             if (req.session.level_user_id == 1){
                 res.redirect('/risk_report'); }
             if (req.session.level_user_id == 2){
-                res.redirect('/abstract_risk');
+                res.redirect('/opd');
             }
             if (req.session.level_user_id == 3){
                 res.redirect('/abstract_risk');

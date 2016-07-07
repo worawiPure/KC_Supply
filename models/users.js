@@ -4,7 +4,7 @@ module.exports = {
 
     getList: function(db){
         var q = Q.defer();
-        db('risk_user')
+        db('user_opd')
             .select()
             .then(function (rows){
                 q.resolve(rows);
@@ -30,7 +30,7 @@ module.exports = {
 
     save_user: function(db,username,password,level_user_id,pname,fname,lname,depcode){
         var q = Q.defer();
-        db('risk_user')
+        db('user_opd')
             .insert({user:username,password:password,level_user_id:level_user_id,pname:pname,fname:fname,lname:lname,depcode:depcode})
             .then(function (rows) {
                 q.resolve(rows);
@@ -43,7 +43,7 @@ module.exports = {
 
     save_user2: function(db,data){
         var q = Q.defer();
-        db('risk_user')
+        db('user_opd')
             .insert({user:data.username,password:data.password,level_user_id:1,pname:data.pname,fname:data.fname,lname:data.lname,depcode:data.department})
             .then(function (rows) {
                 q.resolve(rows);
@@ -56,7 +56,7 @@ module.exports = {
 
     save_user3: function(db,data){
         var q = Q.defer();
-        db('risk_user')
+        db('user_opd')
             .update({user:data.username,pname:data.pname,fname:data.fname,lname:data.lname,depcode:data.department})
             .where('id',data.id)
             .then(function (rows) {
@@ -67,9 +67,10 @@ module.exports = {
             });
         return q.promise;
     },
+
     save_user4: function(db,id,username,encryptPass){
         var q = Q.defer();
-        db('risk_user')
+        db('user_opd')
             .update({user:username,password:encryptPass})
             .where('id',id)
             .then(function (rows) {
@@ -84,7 +85,7 @@ module.exports = {
 
     remove_user: function(db,id){
         var q = Q.defer();
-        db('risk_user')
+        db('user_opd')
             .delete()
             .where('id',id)
             .then(function(){
@@ -98,7 +99,7 @@ module.exports = {
 
     update_user: function(db,id,username,level_user_id,pname,fname,lname,depcode){
        var q = Q.defer();
-        db('risk_user')
+        db('user_opd')
             .update({user:username,level_user_id:level_user_id,pname:pname,fname:fname,lname:lname,depcode:depcode})
             .where('id',id)
             .then(function(){
@@ -112,7 +113,7 @@ module.exports = {
 
     post_update_user: function(db,id){
         var q = Q.defer();
-        db('risk_user')
+        db('user_opd')
             .update({comfirm: 'Y' })
             .where('id',id)
             .then(function(){
@@ -126,9 +127,9 @@ module.exports = {
 
     getSubAll: function(db,startpage){
         var q = Q.defer();
-        var sql =   'SELECT u.*,concat(p.name,u.fname," ",u.lname) as Nameuser,u.user,u.password,r.level_username,d.depname FROM risk_user u '+
+        var sql =   'SELECT u.*,concat(p.name,u.fname," ",u.lname) as Nameuser,u.user,u.password,r.level_username,d.depname FROM user_opd u '+
         'LEFT OUTER JOIN pname p ON p.id=u.pname '+
-        'LEFT OUTER JOIN risk_leveluser r ON r.level_user_id=u.level_user_id '+
+        'LEFT OUTER JOIN opd_leveluser r ON r.level_user_id=u.level_user_id '+
         'LEFT OUTER JOIN department d ON d.depcode=u.depcode  '+
         'where u.comfirm is not null '+
         'order by u.level_user_id desc '+
@@ -147,7 +148,7 @@ module.exports = {
 
     getSubAll_total: function(db){
         var q = Q.defer();
-        var sql =   'SELECT count(*) as total FROM risk_user u '+
+        var sql =   'SELECT count(*) as total FROM opd_user u '+
         'where u.comfirm is not null '+
         'order by u.level_user_id desc'    ;
         db.raw(sql)
@@ -164,9 +165,9 @@ module.exports = {
 
     get_comfirm_user: function(db){
         var q = Q.defer();
-        var sql =   'SELECT u.*,concat(p.name,u.fname," ",u.lname) as Nameuser,u.user,u.password,r.level_username,d.depname FROM risk_user u '+
+        var sql =   'SELECT u.*,concat(p.name,u.fname," ",u.lname) as Nameuser,u.user,u.password,r.level_username,d.depname FROM opd_user u '+
             'LEFT OUTER JOIN pname p ON p.id=u.pname '+
-            'LEFT OUTER JOIN risk_leveluser r ON r.level_user_id=u.level_user_id '+
+            'LEFT OUTER JOIN opd_leveluser r ON r.level_user_id=u.level_user_id '+
             'LEFT OUTER JOIN department d ON d.depcode=u.depcode  '+
             'where u.comfirm is null '+
             'order by u.level_user_id desc'   ;
@@ -184,10 +185,10 @@ module.exports = {
 
     getUser_edit: function(db,data){
             var q = Q.defer();
-            var sql =   'SELECT u.*,concat(p.name,u.fname," ",u.lname) as Nameuser,u.user,u.password,d.depname,p.name FROM risk_user u '+
-                'LEFT OUTER JOIN pname p ON p.id=u.pname '+
-                'LEFT OUTER JOIN department d ON d.depcode=u.depcode '+
-                'where u.user = ? ';
+            var sql =   'SELECT u.*,concat(p.name,u.fname," ",u.lname) as Nameuser,u.user,u.password,d.depname,p.name FROM user_opd u '+
+        'LEFT OUTER JOIN pname p ON p.id=u.pname   '+
+        'LEFT OUTER JOIN department d ON d.depcode=u.depcode   '+
+        'where u.user = ? ';
             db.raw(sql,[data.username])
                 .then(function(rows){
                     console.log(rows[0]);
@@ -202,9 +203,9 @@ module.exports = {
 
     getUser_show: function(db,username){
             var q = Q.defer();
-            var sql =   'SELECT CONCAT(p.`name`,u.fname," ",u.lname) as Uname,th_level FROM risk_user u '+
+            var sql =   'SELECT CONCAT(p.`name`,u.fname," ",u.lname) as Uname,th_level FROM opd_user u '+
                         'LEFT OUTER JOIN pname p ON p.id=u.pname  '+
-                        'LEFT OUTER JOIN risk_leveluser l ON u.level_user_id=l.id '+
+                        'LEFT OUTER JOIN opd_leveluser l ON u.level_user_id=l.id '+
                         'where u.user = ? ';
             db.raw(sql,[username])
                 .then(function(rows){
