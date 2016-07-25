@@ -434,13 +434,13 @@ $(function(){
         var data = {};
         var date_report_normal1 = $('#Date_Report_normal1').val();
         var date_report_normal2 = $('#Date_Report_normal2').val();
-        var Number_row = $('#txtNumber_row').val();
+        //var Number_row = $('#txtNumber_row').val();
         data.date_report_normal1 = date_report_normal1;
         data.date_report_normal2 = date_report_normal2;
         data.date_report_normal1=moment(data.date_report_normal1, 'DD/MM/YYYY').format('YYYY-MM-DD');
         data.date_report_normal2=moment(data.date_report_normal2, 'DD/MM/YYYY').format('YYYY-MM-DD');
-        data.Number_row = Number_row;
-        window.open('/export_report_normal/'+ data.date_report_normal1 +'/'+ data.date_report_normal2 +'/'+data.Number_row, '_blank');
+       // data.Number_row = Number_row;
+        window.open('/export_report_normal/'+ data.date_report_normal1 +'/'+ data.date_report_normal2, '_blank');
     });
 
     $('#btnReport_special').on('click', function(e){
@@ -448,12 +448,12 @@ $(function(){
         var data = {};
         var date_report_special1 = $('#Date_Report_special1').val();
         var date_report_special2 = $('#Date_Report_special2').val();
-        var Number_row2 = $('#txtNumber_row2').val();
+       // var Number_row2 = $('#txtNumber_row2').val();
         data.date_report_special1 = date_report_special1;
         data.date_report_special2 = date_report_special2;
         data.date_report_special1=moment(data.date_report_special1, 'DD/MM/YYYY').format('YYYY-MM-DD');
         data.date_report_special2=moment(data.date_report_special2, 'DD/MM/YYYY').format('YYYY-MM-DD');
-        data.Number_row2 = Number_row2;
-        window.open('/export_report_special/'+ data.date_report_special1 +'/'+ data.date_report_special2 +'/'+data.Number_row2, '_blank');
+       // data.Number_row2 = Number_row2;
+        window.open('/export_report_special/'+ data.date_report_special1 +'/'+ data.date_report_special2, '_blank');
     });
 });

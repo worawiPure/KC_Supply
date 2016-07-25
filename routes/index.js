@@ -144,19 +144,19 @@ router.post('/get_opd_show',function(req, res){
     )
 });
 
-router.get('/export_report_normal/:start/:end/:number_row',function(req, res){
+router.get('/export_report_normal/:start/:end',function(req, res){
     var db = req.db;
     var data = {};
-    var json = {};
+   // var json = {};
     data.date_report_normal1 = req.params.start;
     data.date_report_normal2 = req.params.end;
-    data.number_row = req.params.number_row;
+    //data.number_row = req.params.number_row;
     //data.date_report_normal1=moment(data.date_report_normal1, 'DD/MM/YYYY').format('YYYY-MM-DD');
     //data.date_report_normal2=moment(data.date_report_normal2, 'DD/MM/YYYY').format('YYYY-MM-DD');
     show.export_normal(db,data)
         .then(function(rows){
         if (rows.length > 0 ){
-        json = _.sampleSize(rows,[data.number_row])
+        //json = _.sampleSize(rows,[data.number_row])  สุ่มค่าจากจำนวนแถวที่เราต้องการ
             //console.log(rows);
             //json = rows[;
             //var xls = json2xls(rows);
@@ -173,7 +173,7 @@ router.get('/export_report_normal/:start/:end/:number_row',function(req, res){
             //};
             //
             //console.log(json);
-            var xls = json2xls(json);
+            var xls = json2xls(rows);
             fs.writeFileSync(exportFile, xls, 'binary');
             res.download(exportFile, function () {
                 //rimraf.sync(export);
@@ -188,19 +188,19 @@ router.get('/export_report_normal/:start/:end/:number_row',function(req, res){
         })
 });
 
-router.get('/export_report_special/:start/:end/:number_row2',function(req, res){
+router.get('/export_report_special/:start/:end',function(req, res){
     var db = req.db;
     var data = {};
-    var json = {};
+    //var json = {};
     data.date_report_special1 = req.params.start;
     data.date_report_special2 = req.params.end;
-    data.number_row2 = req.params.number_row2;
+    //data.number_row2 = req.params.number_row2;
     //data.date_report_special1=moment(data.date_report_special1, 'DD/MM/YYYY').format('YYYY-MM-DD');
     //data.date_report_special2=moment(data.date_report_special2, 'DD/MM/YYYY').format('YYYY-MM-DD');
     show.export_special(db,data)
         .then(function(rows){
             if (rows.length > 0 ) {
-                json = _.sampleSize(rows, [data.number_row2])
+                //json = _.sampleSize(rows, [data.number_row2]) สุ่มค่าจากจำนวนแถวที่เราต้องการ
                 //console.log(rows);
                 //json = rows[;
                 //var xls = json2xls(rows);
@@ -217,7 +217,7 @@ router.get('/export_report_special/:start/:end/:number_row2',function(req, res){
                 //};
                 //
                 //console.log(json);
-                var xls = json2xls(json);
+                var xls = json2xls(rows);
                 fs.writeFileSync(exportFile, xls, 'binary');
                 res.download(exportFile, function () {
                     //rimraf.sync(export);
