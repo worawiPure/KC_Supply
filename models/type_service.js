@@ -186,7 +186,7 @@ module.exports = {
             'round(time_to_sec((TIMEDIFF(finish_other,vsttime_other)))/60) as "อื่นๆ",          '+
             'round(time_to_sec((TIMEDIFF(vsttime_appointment,vsttime_doctor)))/60) as "ระยะเวลาตรวจพิเศษ", '+
             'round(time_to_sec((TIMEDIFF(finish_appointment,vsttime_appointment)))/60) as "ให้คำแนะนำ",     '+
-            'round(time_to_sec((TIMEDIFF(finish_drugs,vsttime_appointment)))/60) as "รับยา",                '+
+            'round(time_to_sec((TIMEDIFF(finish_drugs,finish_appointment)))/60) as "รอรับยา",                '+
             'round(time_to_sec((TIMEDIFF(finish_appointment,finish_card)))/60) as "รอคอยซักประวัติ ถึง ให้คำแนะนำหลังตรวจ", '+
             'round(time_to_sec((TIMEDIFF(finish_drugs,vsttime_card)))/60) as "ทำบัตร - รับยากลับบ้าน"           '+
             'FROM service_time                                                                                  '+
@@ -211,7 +211,7 @@ module.exports = {
             'round(time_to_sec((TIMEDIFF(vsttime_doctor,finish_screen)))/60) as "รอตรวจ",               '+
             'round(time_to_sec((TIMEDIFF(finish_doctor,vsttime_doctor)))/60) as "ตรวจเฉพาะ OPD",            '+
             'round(time_to_sec((TIMEDIFF(finish_appointment,vsttime_appointment)))/60) as "ให้คำแนะนำ",     '+
-            'round(time_to_sec((TIMEDIFF(finish_drugs,vsttime_appointment)))/60) as "รับยา",                '+
+            'round(time_to_sec((TIMEDIFF(finish_drugs,finish_appointment)))/60) as "รอรับยา",                '+
             'round(time_to_sec((TIMEDIFF(finish_appointment,finish_card)))/60) as "รอคอยซักประวัติ ถึง ให้คำแนะนำหลังตรวจ", '+
             'round(time_to_sec((TIMEDIFF(finish_drugs,vsttime_card)))/60) as "ทำบัตร - รับยากลับบ้าน"           '+
             'FROM service_time                                                                                  '+
