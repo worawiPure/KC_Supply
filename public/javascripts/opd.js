@@ -163,12 +163,6 @@ $(function(){
             !data.vsttime_screen || !data.finish_screen || !data.vsttime_doctor || !data.finish_doctor || !data.vsttime_appointment ||
             !data.finish_appointment || !data.vsttime_drugs || !data.finish_drugs) {
            alert('บันทึกข้อมูลไม่ครบถ้วน !! ');
-       } else if (data.vsttime_card > data.finish_card) {
-                  alert('พบเวลาเริ่มต้นมากว่าเวลาเสร็จสิ้นที่ ห้องบัตร');
-       } else if (data.vsttime_screen > data.finish_screen) {
-                 alert('พบเวลาเริ่มต้นมากว่าเวลาเสร็จสิ้นที่ ซักประวัติ');
-       } else if (data.vsttime_doctor > data.finish_doctor) {
-           alert('พบเวลาเริ่มต้นมากว่าเวลาเสร็จสิ้นที่ พบแพทย์');
        } else if (data.vsttime_lab > data.finish_lab) {
            alert('พบเวลาเริ่มต้นมากว่าเวลาเสร็จสิ้นที่ตรวจพิเศษ LAB');
        } else if (data.vsttime_xray > data.finish_xray) {
@@ -177,14 +171,46 @@ $(function(){
            alert('พบเวลาเริ่มต้นมากว่าเวลาเสร็จสิ้นที่ตรวจพิเศษ EKG');
        } else if (data.vsttime_other > data.finish_other) {
            alert('พบเวลาเริ่มต้นมากว่าเวลาเสร็จสิ้นที่ตรวจพิเศษ อื่นๆ');
-       } else if (data.vsttime_appointment > data.finish_appointment) {
-           alert('พบเวลาเริ่มต้นมากว่าเวลาเสร็จสิ้นที่ นัดให้คำแนะนำ');
-       } else if (data.vsttime_drugs > data.finish_drugs) {
-           alert('พบเวลาเริ่มต้นมากว่าเวลาเสร็จสิ้นที่ ห้องยา');
+       } else if (data.vsttime_card > data.finish_card || data.vsttime_card > data.vsttime_screen || data.vsttime_card > data.finish_screen || data.vsttime_card > data.vsttime_doctor ||
+           data.vsttime_card > data.finish_doctor || data.vsttime_card > data.vsttime_appointment || data.vsttime_card > data.finish_appointment ||
+           data.vsttime_card > data.vsttime_drugs || data.vsttime_card > data.finish_drugs) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
        } else if (data.finish_card > data.vsttime_screen || data.finish_card > data.finish_screen || data.finish_card > data.vsttime_doctor ||
            data.finish_card > data.finish_doctor || data.finish_card > data.vsttime_appointment || data.finish_card > data.finish_appointment ||
-           data.finish_card > data.vsttime_drugs || data.finish_card > data.finish_drugs ) {
-           alert('พบการลงช่วงเวลา ไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+           data.finish_card > data.vsttime_drugs || data.finish_card > data.finish_drugs) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+       } else if (data.vsttime_screen > data.finish_screen || data.vsttime_screen < data.vsttime_card || data.vsttime_screen < data.finish_card ||
+           data.vsttime_screen > data.vsttime_doctor || data.vsttime_screen > data.finish_doctor || data.vsttime_screen > data.vsttime_appointment || data.vsttime_screen > data.finish_appointment ||
+           data.vsttime_screen > data.vsttime_drugs || data.vsttime_screen > data.finish_drugs) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+       } else if (data.finish_screen < data.vsttime_screen || data.finish_screen < data.vsttime_card || data.finish_screen < data.finish_card ||
+           data.finish_screen > data.vsttime_doctor || data.finish_screen > data.finish_doctor || data.finish_screen > data.vsttime_appointment || data.finish_screen > data.finish_appointment ||
+           data.finish_screen > data.vsttime_drugs || data.finish_screen > data.finish_drugs) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+       } else if (data.vsttime_doctor > data.finish_doctor || data.vsttime_doctor < data.vsttime_card || data.vsttime_doctor < data.finish_card || data.vsttime_doctor < data.vsttime_screen || data.vsttime_doctor < data.finish_screen ||
+           data.vsttime_doctor > data.vsttime_appointment || data.vsttime_doctor > data.finish_appointment ||
+           data.vsttime_doctor > data.vsttime_drugs || data.vsttime_doctor > data.finish_drugs) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+       } else if (data.finish_doctor < data.vsttime_doctor || data.finish_doctor < data.vsttime_card || data.finish_doctor < data.finish_card || data.finish_doctor < data.vsttime_screen || data.finish_doctor < data.finish_screen ||
+           data.finish_doctor > data.vsttime_appointment || data.finish_doctor > data.finish_appointment ||
+           data.finish_doctor > data.vsttime_drugs || data.finish_doctor > data.finish_drugs) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+       } else if (data.vsttime_appointment > data.finish_appointment || data.vsttime_appointment < data.vsttime_card || data.vsttime_appointment < data.finish_card || data.vsttime_appointment < data.vsttime_screen || data.vsttime_appointment < data.finish_screen ||
+           data.vsttime_appointment < data.vsttime_doctor || data.vsttime_appointment < data.finish_doctor ||
+           data.vsttime_appointment > data.vsttime_drugs || data.vsttime_appointment > data.finish_drugs) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+       } else if ( data.finish_appointment < data.vsttime_appointment || data.finish_appointment < data.vsttime_card || data.finish_appointment < data.finish_card || data.finish_appointment < data.vsttime_screen || data.finish_appointment < data.finish_screen ||
+           data.finish_appointment < data.vsttime_doctor || data.finish_appointment < data.finish_doctor ||
+           data.finish_appointment > data.vsttime_drugs || data.finish_appointment > data.finish_drugs) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+       } else if (data.vsttime_drugs > data.finish_drugs || data.vsttime_drugs < data.vsttime_card || data.vsttime_drugs < data.finish_card || data.vsttime_drugs < data.vsttime_screen || data.vsttime_drugs < data.finish_screen ||
+           data.vsttime_drugs < data.vsttime_doctor || data.vsttime_drugs < data.finish_doctor ||
+           data.vsttime_drugs < data.vsttime_appointment   || data.vsttime_drugs < data.vsttime_appointment ) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
+       } else if (data.finish_drugs < data.vsttime_drugs || data.finish_drugs < data.vsttime_card || data.finish_drugs < data.finish_card || data.finish_drugs < data.vsttime_screen || data.finish_drugs < data.finish_screen ||
+           data.finish_drugs < data.vsttime_doctor || data.finish_drugs < data.finish_doctor ||
+           data.finish_drugs < data.vsttime_appointment   || data.finish_drugs < data.vsttime_appointment ) {
+           alert('พบการลงช่วงเวลาไม่ถูกต้อง กรุณาเช็คเวลาใหม่ด้วยครับ !! ');
        } else {
                 if(confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')){
                     $.ajax({
