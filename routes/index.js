@@ -206,7 +206,7 @@ router.get('/export_report_special/:start/:end',function(req, res){
                 //var xls = json2xls(rows);
                 var exportPath = './templates/xls';
                 fse.ensureDirSync(exportPath);
-                var exportFile = path.join(exportPath, 'risk-' + moment().format('x') + '.xls');
+                var exportFile = path.join(exportPath, 'OPD_Time-' + moment().format('x') + '.xls');
                 //fs.writeFile(exportFile, xls, 'binary');
                 var json2xls = require('json2xls');
                 //var json = {

@@ -12,13 +12,14 @@ html
     link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/roboto.min.css")
     link(rel="stylesheet", href="/stylesheets/style.css")
     script(src="/libs/jquery/dist/jquery.min.js")
-    script(src="/libs/jquery/dist/jquery.min.js")
     script(src="/libs/bootstrap/dist/js/bootstrap.min.js")
     script(src="/libs/bootstrap-material-design/dist/js/material.min.js")
     script(src="/libs/bootstrap-material-design/dist/js/ripples.min.js")
     script(src="/libs/paging/jquery.paging.min.js")
     script(src="/javascripts/app.js")
     script(src="/libs/lodash/lodash.min.js")
+    script(src="/libs/moment/min/moment-with-locales.js")
+    script(src="/libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js")
     script(src="/libs/moment/moment.js")
 
     script.
@@ -26,6 +27,13 @@ html
             $('[data-toggle="tooltip"]').tooltip();
             $('input[readonly]').css('background-color', 'white');
             $('input[disabled="disabled"]').css('background-color', 'white');
+            $('[data-datepicker]').datetimepicker({
+                locale: 'th',
+                format: 'DD/MM/YYYY'
+            });
+            $('[data-timepicker]').datetimepicker({
+                format: 'HH:mm'
+            });
         })
 
     block scripts
