@@ -1,0 +1,58 @@
+extends  ../admin_layout_approve
+block scripts
+    script(src="/javascripts/show_bills_no_admin.js")
+    script(src="/javascripts/total_bills_approve_today.js")
+    script(src="/javascripts/total_bills_not_approve.js")
+block content
+        br
+        .row
+            .panel.panel-inverse
+                .panel-heading
+                    h3.panel-title
+                        i.fa.fa-list
+                        | &nbsp; รายการเบิกวัสดุจ่ายกลาง
+                .panel-body
+                    .row
+                        .col-md-12
+                            .panel.panel-default
+                                .panel-body
+                                    .row
+                                        .col-md-10
+                                            label เลขที่บิล : #{rows.bill}
+                                        .col-md-2
+                                            input(type="hidden" value="#{rows.bill_no}")#txtId
+                                            button#btnPrint(type="button").btn.btn-inverse.btn-sm
+                                                i.fa.fa-print
+                                                | &nbsp; ปริ้น
+                                    .row
+                                        .col-md-12
+                                            label วันที่ทำรายการ : #{rows.date_service}
+                                    .row
+                                        .col-md-12
+                                            label วันที่รับรายการ : #{rows.date_receive}
+                                    .row
+                                        .col-md-12
+                                            label แผนก : #{rows.depname}
+                                    .row
+                                        .col-md-12
+                                            label สถานะ : #{rows.pay_status}
+                    table.table.table-hover#tbl_show_bills
+                        thead
+                            tr
+                                td ลำดับ
+                                td ชื่อวัสดุ
+                                td จำนวนเบิก
+                                td จำนวนจ่ายจริง
+                                td จำนวนค้างจ่าย
+                                td หน่วย
+                        tbody
+                            - var y = 0
+                            each item in items
+                                -y++
+                                tr
+                                    td(style="width: 10px;") #{y}
+                                    td #{item.kind_name}
+                                    td #{item.qty}
+                                    td #{item.pay}
+                                    td #{item.pab}
+                                    td #{item.unitname}

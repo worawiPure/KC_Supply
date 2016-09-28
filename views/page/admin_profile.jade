@@ -1,8 +1,7 @@
-extends  ../admin_layout
+extends  ../admin_layout_user
 
 block scripts
     script(src="/javascripts/admin_profile.js")
-
 block content
     br
     .alert.alert-warning(role="alert",style="display: none;")#divAlert
@@ -14,7 +13,7 @@ block content
             span(aria-hidden="true")
         p Username/Password นี้มีแล้วในฐานข้อมูล
 
-    .panel.panel-primary
+    .panel.panel-inverse
         .panel-heading
             h3.panel-title
                 i.glyphicon.glyphicon-user
@@ -28,38 +27,38 @@ block content
                 .col-md-8
                     .form-group
                         label(for="txtUsername") ชื่อผู้ใช้
-                        input(type="text",name="username",value = '#{data.users.user}',readonly)#txtUsername.form-control
+                        input(type="text",name="username",value = '#{data.users.username}',readonly)#txtUsername.form-control
             .row
                 .col-md-8
                     .form-group
                         label(for="slPname") คำนำหน้า
                         select#slPname.form-control
                             for d in data.pnames
-                                if d.name == data.users.name
-                                    option(value="#{d.id}", selected="selected") #{d.name}
+                                if d.prefixnamel == data.users.prefixnamel
+                                    option(value="#{d.id}", selected="selected") #{d.prefixnamel}
                                 else
-                                    option(value="#{d.id}") #{d.name}
+                                    option(value="#{d.id}") #{d.prefixnamel}
             .row
                 .col-md-8
                     .form-group
                         label(for="txtName") ชื่อ
-                        input(type="text",name="name",value = "#{data.users.fname}")#txtName.form-control
+                        input(type="text",name="name",value = "#{data.users.name}")#txtName.form-control
             .row
                 .col-md-8
                     .form-group
                         label(for="txtLname") นามสกุล
-                        input(type="text",name="lname",value = "#{data.users.lname}")#txtLname.form-control
+                        input(type="text",name="lname",value = "#{data.users.surname}")#txtLname.form-control
             .row
                 .col-md-8
                     .form-group
                         label(for="slDepartment") แผนก
                         select#slDepartment.form-control
                             for p in data.departments
-                                if p.id == data.users.depcode
+                                if p.depcode == data.users.depcode
                                     option(value="#{p.depcode}", selected="selected") #{p.depname}
                                 else
                                     option(value="#{p.depcode}") #{p.depname}
-            button.btn.btn-success(type="button")#btnEdit แก้ไขรายละเอียด
+            button.btn.btn-inverse(type="button")#btnEdit แก้ไขรายละเอียด
 
     .modal.fade#mdlNew(tabindex="-1",role="dialog")
         p Username/Password นี้มีแล้วในฐานข้อมูล
@@ -77,7 +76,7 @@ block content
                     input(type="hidden" value="#{data.users.id}")#txtId_user
                     .form-group
                         label(for="txtEdit_Username") User
-                        input(type="text",name="edit_username",value = '#{data.users.user}',readonly)#txtEdit_Username.form-control
+                        input(type="text",name="edit_username",value = '#{data.users.username}',readonly)#txtEdit_Username.form-control
                     .form-group
                         label(for="txtEdit_password") Password
                         input(type="password",name="edit_password")#txtEdit_password.form-control

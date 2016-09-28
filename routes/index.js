@@ -3,125 +3,108 @@ var _ = require('lodash');
 var moment = require('moment');
 var json2xls = require('json2xls');
 var router = express.Router();
-var level_user = require('../models/users');
-var show = require('../models/type_service');
-var save = require('../models/type_service');
-var edit = require('../models/type_service');
-var remove = require('../models/type_service');
+var Q = require('q');
 var fs = require('fs');
+var numeral = require('numeral');
+var pdf = require('html-pdf');
 var fse = require('fs-extra');
+var gulp = require('gulp');
+var data = require('gulp-data');
+var jade = require('gulp-jade');
+var rimraf = require('rimraf');
+var level_user = require('../models/users');
+var show = require('../models/items');
 var path = require('path');
 var lodash = require('lodash');
 
 /* GET home page. */
 
-router.get('/admin', function(req, res, next) {
-    if (req.session.level_user_id != 2 && req.session.level_user_id != 3){
-        res.render('./page/access_denied')
-    }else{
-        res.render('admin');}
-});
-
-router.get('/opd', function(req, res, next) {
-    if (req.session.level_user_id != 2){
+router.get('/material_selection', function(req, res, next) {
+    if (req.session.level_user != 2){
         res.render('./page/access_denied')
     } else {
-        var db =req.db;
+        var db = req.db;
         var data = {};
-        show.getList_Type_service(db)
-            .then(function(rows){
+        show.getList_material_category(db)
+            .then(function (rows) {
                 console.log(rows);
-                data.types = rows;
-                return show.getList_Type_treatment(db)
-            })
-            .then(function(rows){
-                console.log(rows);
-                data.treatments =rows;
-                res.render('page/opd',{data:data});
-            },function(err){
+                data.categorys = rows;
+                res.render('./page/material_selection', {data:data});
+            }, function (err) {
                 console.log(err);
-                res.render('page/opd',{
-                    data:{types:[],trestments:[]}
+                res.render('page/material_selection', {
+                    data: {categorys: []}
                 });
             });
     }});
 
-router.post('/save_service', function(req,res){
-    var db = req.db;
-    var data = req.body.data;
-    data.service_date=moment(data.service_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    if(data){
-        console.log(data);
-        save.Save_service_time(db,data)
-            .then(function() {
-                res.send({ok: true});
-            },
-            function(err){
-                res.send({ok:false,msg:err})
-            })
-    } else {
-        res.send({ok:false,msg:'ข้อมูลไม่สมบูรณ์'})
-    }
-});
-
-router.post('/search_date_opd',function(req,res){
-    var db = req.db;
+router.post('/items_list',function(req,res){
     var data = {};
-    data.date1 = req.body.date1;
-    data.date2 = req.body.date2;
-    data.date1=moment(data.date1, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    data.date2=moment(data.date2, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    console.log(data);
-    show.search_date(db,data)
+    data.id = req.body.id;
+    var db = req.db;
+    show.getList_material_items(db,data)
         .then(function(rows){
-            console.log(rows);
-            res.send({ok: true,rows:rows});
+            res.send({ok:true,rows:rows});
         },
         function(err){
-            console.log(err);
             res.send({ok:false,msg:err})
         })
 });
 
-router.post('/edit_opd', function(req,res){
+router.post('/save_material', function(req,res){
     var db = req.db;
-    var data = req.body.data;
-    data.service_date=moment(data.service_date, 'DD/MM/YYYY').format('YYYY-MM-DD');
-        if(data){
-            edit.update_opd(db,data)
-                .then(function(){
-                    res.send({ok:true})
-                },function(err){
-                    res.send({ok:false,msg:err})
-                })
-        } else {
-            res.send({ok:false,msg:'ข้อมูลไม่สมบูรณ์'})
-        }
-});
+    var data = {};
+    var no_order = "KC";
+    var year = moment().get('year');
+    data.username = req.session.username;
+    data.depcode = req.session.depcode;
+    data.date_service =  moment().format('YYYY-MM-DD HH:mm:ss');
+    data.date_receive = moment(req.body.data.date_receive, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    var products = req.body.data.products;
+    console.log(req.body.data.products);
+    var items = [];
+    console.log(data);
+    if(data){
+    show.getSave_bill(db,data)
+        .then(function(bill_no){      // insert bill
+            var _bill_no = bill_no[0];   // ได้ id
 
-router.post('/remove_opd',function(req,res){
-    var db = req.db;
-    var id = req.body.id;
-    if(id){
-        remove.remove_opd(db,id)
-            .then(function(){
-                res.send({ok:true})
-            },function(err){
-                res.send({ok:false,msg:err})
-            })
+            _.forEach(products, function (v) {
+                var obj = {};
+                obj.bill_no = _bill_no; // id
+                obj.items_id = v.id;
+                obj.qty = v.qty;
+                items.push(obj);
+            });
+            console.log(items);
+        return show.getSave_material(db,items)
+        })
+        .then(function () {
+            res.send({ok: true});
+        },
+        function(err){
+            res.send({ok:false,msg:err})
+            console.log(err);
+        });
     } else {
         res.send({ok:false,msg:'ข้อมูลไม่สมบูรณ์'})
     }
+
 });
 
-router.post('/get_opd_total' ,function(req,res) {
+router.get('/list_bills', function(req, res, next) {
+    if (req.session.level_user != 2){
+        res.render('./page/access_denied')
+    }else{
+        res.render('./page/list_bills_user');}
+});
+
+router.post('/list_bills_total',function(req, res){
     var db = req.db;
-    var data = {};
-    data.date1 = req.body.date1;
-    data.date2 = req.body.date2;
-    console.log(data);
-    show.getOPD_total(db,data)
-        .then(function(total) {
+    var username = req.session.username;
+    show.getList_bills_total(db,username)
+        .then(function(total){
+            console.log(total);
             res.send({ok:true,total:total})
         },function(err){
             res.send({ok:false,msg:err})
@@ -129,12 +112,11 @@ router.post('/get_opd_total' ,function(req,res) {
     )
 });
 
-router.post('/get_opd_show',function(req, res){
+router.post('/list_bills_page',function(req, res){
     var db = req.db;
-    var date_search1 = parseInt(req.body.date_search1);
-    var date_search2 = parseInt(req.body.date_search2);
     var startpage = parseInt(req.body.startRecord);
-    show.getOPD_page(db,date_search1,date_search2,startpage)
+    var username = req.session.username;
+    show.getList_bills_Detail(db,username,startpage)
         .then(function(rows){
             console.log(rows);
             res.send({ok:true,rows:rows})
@@ -144,92 +126,194 @@ router.post('/get_opd_show',function(req, res){
     )
 });
 
-router.get('/export_report_normal/:start/:end',function(req, res){
+router.post('/search_bills',function(req,res){
     var db = req.db;
     var data = {};
-   // var json = {};
-    data.date_report_normal1 = req.params.start;
-    data.date_report_normal2 = req.params.end;
-    //data.number_row = req.params.number_row;
-    //data.date_report_normal1=moment(data.date_report_normal1, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    //data.date_report_normal2=moment(data.date_report_normal2, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    show.export_normal(db,data)
+    data.bills = req.body.bills;
+    data.username = req.session.username;
+    console.log(data);
+    show.getSearch_bill(db,data)
         .then(function(rows){
-        if (rows.length > 0 ){
-        //json = _.sampleSize(rows,[data.number_row])  สุ่มค่าจากจำนวนแถวที่เราต้องการ
-            //console.log(rows);
-            //json = rows[;
-            //var xls = json2xls(rows);
-            var exportPath = './templates/xls';
-            fse.ensureDirSync(exportPath);
-            var exportFile = path.join(exportPath, 'OPD_Time-' + moment().format('x') + '.xls');
-            //fs.writeFile(exportFile, xls, 'binary');
-            var json2xls = require('json2xls');
-            //var json = {
-            //    foo: 'bar',
-            //    qux: 'moo',
-            //    poo: 123,
-            //    stux: new Date()
-            //};
-            //
-            //console.log(json);
-            var xls = json2xls(rows);
-            fs.writeFileSync(exportFile, xls, 'binary');
-            res.download(exportFile, function () {
-                //rimraf.sync(export);
-                fse.removeSync(exportFile);
-            });
-        } else {
-            res.send({ok:false,msg:'ไม่มีข้อมูลในช่วงที่เลือกครับ'})
-        }
-        },function(err){
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
+            console.log(err);
+            res.send({ok:false,msg:err})
+        })
+
+});
+
+router.post('/search_date_bills',function(req,res){
+    var db = req.db;
+    var data = {};
+    data.date1=moment(req.body.date1, 'DD/MM/YYYY').format('YYYY-MM-DD 00:00:00');
+    data.date2=moment(req.body.date2, 'DD/MM/YYYY').format('YYYY-MM-DD 23:59:59');
+    data.username=req.session.username;
+    console.log(data);
+    show.getSearch_date_bill(db,data)
+        .then(function(rows){
+            res.send({ok: true,rows:rows});
+        },
+        function(err){
             console.log(err);
             res.send({ok:false,msg:err})
         })
 });
 
-router.get('/export_report_special/:start/:end',function(req, res){
-    var db = req.db;
-    var data = {};
-    //var json = {};
-    data.date_report_special1 = req.params.start;
-    data.date_report_special2 = req.params.end;
-    //data.number_row2 = req.params.number_row2;
-    //data.date_report_special1=moment(data.date_report_special1, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    //data.date_report_special2=moment(data.date_report_special2, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    show.export_special(db,data)
-        .then(function(rows){
-            if (rows.length > 0 ) {
-                //json = _.sampleSize(rows, [data.number_row2]) สุ่มค่าจากจำนวนแถวที่เราต้องการ
+router.get('/show_bill/:bill_no',function(req,res){
+    if (req.session.level_user != 2){
+        res.render('./page/access_denied')
+    } else {
+        var products = [];
+        var items = products;
+        var db = req.db;
+        var id = req.params.bill_no;
+        console.log(id);
+        show.getShow_bill(db,id)
+            .then(function (rows) {
+                var data = rows[0];
                 //console.log(rows);
-                //json = rows[;
-                //var xls = json2xls(rows);
-                var exportPath = './templates/xls';
-                fse.ensureDirSync(exportPath);
-                var exportFile = path.join(exportPath, 'OPD_Time-' + moment().format('x') + '.xls');
-                //fs.writeFile(exportFile, xls, 'binary');
-                var json2xls = require('json2xls');
-                //var json = {
-                //    foo: 'bar',
-                //    qux: 'moo',
-                //    poo: 123,
-                //    stux: new Date()
-                //};
-                //
-                //console.log(json);
-                var xls = json2xls(rows);
-                fs.writeFileSync(exportFile, xls, 'binary');
-                res.download(exportFile, function () {
-                    //rimraf.sync(export);
-                    fse.removeSync(exportFile);
+                _.forEach(rows,function(v){
+                    var product = {};
+                    product.kind_name = v.kind_name;
+                    product.qty = v.qty;
+                    product.unitname = v.unitname;
+                    product.pay = v.pay;
+                    product.pab = v.pab;
+                    products.push(product);
                 });
-            } else {
-                res.send({ok:false,msg:'ไม่มีข้อมูลในช่วงที่เลือกครับ'})
-            }
-            },function(err){
-            console.log(err);
-            res.send({ok:false,msg:err})
-            })
+                res.render('page/show_bills_no',{rows: data,items: items});
+                console.log(items);
+                }, function (err) {
+                res.send({ok: false, msg: err})
+                }
+        )
+    }
 });
 
+router.get('/print_bill/:bill_no', function (req, res, next) {
+    var db = req.db;
+    var json = {};
+    var id = req.params.bill_no;
+    var products = [];
+    show.getReport_bills(db,id)
+        .then(function(rows) {
+            console.log(id);
+            json.detail = rows[0];
+            _.forEach(rows,function(v){
+                var product = {};
+                product.kind_name = v.kind_name;
+                product.qty = v.qty;
+                product.unitname = v.unitname;
+                product.pay = v.pay;
+                product.pab = v.pab;
+                products.push(product);
+            });
+            json.products = products;
+            fse.ensureDirSync('./templates/html');
+            fse.ensureDirSync('./templates/pdf');
+            var destPath = './templates/html/' + moment().format('x');
+            fse.ensureDirSync(destPath);
+            json.img = './img/sign.png';
+            // Create pdf
+            gulp.task('html', function (cb) {
+                return gulp.src('./templates/report_bills.jade')
+                    .pipe(data(function () {
+                        return json;
+                    }))
+                    .pipe(jade())
+                    .pipe(gulp.dest(destPath));
+                cb();
+            });
+            gulp.task('pdf', ['html'], function () {
+                var html = fs.readFileSync(destPath + '/report_bills.html', 'utf8')
+                var options = {
+                    format: 'A4',
+                    header: {
+                        height: "20mm",
+                        contents: '<div style="text-align: center"><h2>รายการเบิกวัสดุ</h2></div>'
+                    },
+                    footer: {
+                        height: "15mm",
+                        contents: '<span style="color: #444;"><small>Printed: ' + new Date() + '</small></span>'
+                    }
+                };
+                var pdfName = './templates/pdf/KC_Supply-' + moment().format('x') + '.pdf';
+                pdf.create(html, options).toFile(pdfName, function (err, resp) {
+                    if (err) {
+                        res.send({ok: false, msg: err});
+                    } else {
+                        res.download(pdfName, function () {
+                            rimraf.sync(destPath);
+                            fse.removeSync(pdfName);
+                        });
+                    }
+                });
+            });
+            // Convert html to pdf
+            gulp.start('pdf');
+        },function(err){
+            res.send({ok: false, msg: err});
+        })
+    // ensure directory
+});
+
+router.get('/list_bills_receive_today', function(req, res, next) {
+    if (req.session.level_user != 2){
+        res.render('./page/access_denied')
+    }else{
+        res.render('./page/bills_receive_today_user');}
+});
+
+router.post('/list_bills_receive_total',function(req, res){
+    var db = req.db;
+    var username = req.session.username;
+    var today =  moment().format('YYYY-MM-DD');
+    show.getList_bills_receive_total(db,username,today)
+        .then(function(total){
+            console.log(total);
+            res.send({ok:true,total:total})
+        },function(err){
+            res.send({ok:false,msg:err})
+        }
+    )
+});
+
+router.post('/list_bills_receive_page',function(req, res){
+    var db = req.db;
+    var startpage = parseInt(req.body.startRecord);
+    var username = req.session.username;
+    var today =  moment().format('YYYY-MM-DD');
+    show.getList_bills_receive_Detail(db,username,today,startpage)
+        .then(function(rows){
+            console.log(rows);
+            res.send({ok:true,rows:rows})
+        },function(err){
+            res.send({ok:false,msg:err})
+        }
+    )
+});
+
+router.post('/count_receive_today_user', function(req, res, next) {
+    if (req.session.level_user != 2 ){
+        res.render('./page/access_denied')
+    }else{
+        var db = req.db;
+        var username = req.session.username;
+        var date_today = moment().format('YYYY-MM-DD');
+        db('bills as b')
+            .count('* as total')
+            .where('b.receive_date', date_today)
+            .where('b.user_order', username)
+            .then(function(rows){
+                console.log(rows[0].total);
+                var data = rows[0].total;
+                res.send({ok:true,total:data})
+            },function(err){
+                res.send({ok:false,msg:err})
+            }
+        )
+    }
+});
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 module.exports = router;

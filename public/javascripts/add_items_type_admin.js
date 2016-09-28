@@ -1,45 +1,44 @@
 $(function(){
+
     var setTable = function(data){
-        var $tblUser = $('#tblUsers > tbody');
-        $tblUser.empty();
+        var $tblItems = $('#tblItems_type > tbody');
+        $tblItems.empty();
         var i=0;
         _.forEach(data.rows, function(v){
             i++;
             var html = '<tr> ' +
                 '<td> ' + i + ' </td>'+
-                '<td> ' + v.Nameuser + ' </td>'+
-                '<td> ' + v.username + ' </td>'+
-                '<td> ' + v.statusname + ' </td>'+
-                '<td> ' + v.depname + ' </td>'+
+                '<td> ' + v.kind_name + ' </td>'+
+                '<td> ' + v.unitname + ' </td>'+
                 '<td> '+
                 '   <div class="btn-group btn-group-sm" role="group"> '+
                 '<button  class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> '+
                 '<i class="fa fa-cogs"> </i> </button> '+
                 '<ul class="dropdown-menu"> '+
                 '<li> '+
-                '<a href="#" data-action="edit" data-id="'+ v.id +'" data-username="'+ v.username +'" data-password="'+ v.pwfix +'" ' +
-                ' data-pname="'+ v.pname +'"  data-fname="'+ v.name +'"  data-lname="'+ v.surname +'"  data-depcode="'+ v.depcode +'" ' +
-                'data-level_user="'+ v.statususer +'" ) > '+
+                '<a href="#" data-action="edit" data-name="'+ v.kind_name +'" data-categoryid="'+ v.kind_category_id+'" data-unitid="'+ v.unitid+'" data-status="'+ v.status+'" data-id="'+ v.id +'") > '+
                 '<i class="fa.fa-edit"> </i> แก้ไข </a></li> '+
                 '<li> '+
                 '<a href="#" data-action="remove" data-id="'+ v.id +'">'+
-                '<i class="fa fa-trash"> </i>ลบ </a></li></ul></div> ';
-            $tblUser.append(html);
-
+                '<i class="fa fa-trash"> </i> ลบ </a></li></ul></div> ';
+            $tblItems.append(html);
         })
     };
 
-    var getUserList = function(){
+    var getItems_type = function(){
+        var id = $('#txtId').val();
         $.ajax({
             method:'POST',
-            url:'/users/get_list_users_total',
-            dataType:'json'
-
+            url:'/admin/get_items_type_total',
+            dataType:'json',
+            contentType:'application/json',
+            data: JSON.stringify({id:id})
         })
             .success(function(data){
+                //setTable(data);
                 $("#paging").paging(data.total, {
                     format: "< . (qq -) nnncnnn (- pp) . >",
-                    perpage: 5,
+                    perpage: 10,
                     lapping: 0,
                     page: 1,
                     onSelect: function (page) {
@@ -47,14 +46,13 @@ $(function(){
                         console.log(this.slice);
                         $.ajax({
                             method:'POST',
-                            url:'/users/get_list_users',
+                            url:'/admin/get_items_type_page',
                             dataType:'json',
                             contentType:'application/json',
-                            data: JSON.stringify({startRecord:startRecord})
+                            data: JSON.stringify({startRecord:startRecord,id:id})
                         })
                             .success(function(data){
                                 setTable(data);
-                                console.log(data)
                             })
                         // Index.getService(start, end, startRecord, function (err, rows) {
                         //     if (err) console.log(err);
@@ -118,13 +116,25 @@ $(function(){
             })
     };
 
+    $('#show_search').fadeOut();
+    $('#close_search').on('click',function(e){
+        $('#show_detail').fadeIn();
+        $('#show_search').fadeOut();
+        $('#txtSearchItems').val('');
+    });
+
+    $('#btnShowSearch').on('click',function(e){
+        $('#show_search').fadeIn();
+        $('#txtSearchItems').val('');
+    });
+
     $(document).on('click','a[data-action="remove"]', function(e){
         e.preventDefault();
         var id = $(this).data('id');
         if(confirm('คุณต้องการลบรายการนี้ ใช่หรือไม่')){
             $.ajax({
                 method:'POST',
-                url:'/users/remove_users',
+                url:'/admin/remove_items_in_type',
                 dataType:'json',
                 data:{
                     id:id
@@ -133,7 +143,7 @@ $(function(){
                 .success(function(data){
                     if(data.ok) {
                         alert('ลบเสร็จเรีนบร้อยแล้ว');
-                        getUserRisk()
+                        getItems_type();
                     } else {
                         console.log(data.msg);
                         alert('ไม่สามารถบันทึได้')
@@ -148,23 +158,22 @@ $(function(){
 
     $(document).on('click','a[data-action="edit"]',function(e){
         e.preventDefault();
-        var username = $(this).data('username');
-        var password = $(this).data('password');
-        var pname = $(this).data('pname');
-        var fname = $(this).data('fname');
-        var lname = $(this).data('lname');
-        var depcode = $(this).data('depcode');
-        var level_user = $(this).data('level_user');
-        var id = $(this).data('id');
+        var name = $(this).data('name');
+        var type = $(this).data('categoryid');
+        var unit = $(this).data('unitid');
+        var status = $(this).data('status');
+        var id2 = $(this).data('id');
 
-        $('#txtUsername').val(username);
-        $('#txtPassword').val(password);
-        $('#slPname').val(pname);
-        $('#txtFname').val(fname);
-        $('#txtLname').val(lname);
-        $('#slDepartment').val(depcode);
-        $('#slLayer').val(level_user);
-        $('#txtId').val(id);
+        $('#txtName').val(name);
+        $('#slType_items').val(type);
+        $('#slUnit_items').val(unit);
+        if (status == 'N' ){
+            $('#checkStatus').prop('checked', false);
+        }
+        else {
+            $('#checkStatus').prop('checked', true);
+        }
+        $('#txtId2').val(id2);
         $("#mdlNew").modal({
             backdrop:'static',
             keyboard:false
@@ -173,6 +182,8 @@ $(function(){
 
     $('#btnShowModal').on('click',function(e){
         e.preventDefault();
+        var id = $('#txtId').val();
+        $('#slType_items').val(id);
         $("#mdlNew").modal({
             backdrop:'static',
             keyboard:false
@@ -180,50 +191,40 @@ $(function(){
     });
 
     $('#mdlNew').on('hidden.bs.modal', function (e) {
-        $('#txtUsername').val('');
-        $('#txtPassword').val('');
-        $('#slPname').val('');
-        $('#txtFname').val('');
-        $('#txtLname').val('');
-        $('#slDepartment').val('');
-        $('#slLayer').val('');
-        $('#txtId').val('');// do something...
+        $('#txtName').val('');
+        $('#slType_items').val('');
+        $('#slUnit_items').val('');
+        $('#checkStatus').prop('checked', false);
+        $('#txtId2').val('');// do something...
     });
 
     $('#btnSave').on('click',function(e){
         e.preventDefault();
-        var username = $('#txtUsername').val();
-        var password = $('#txtPassword').val();
-        var pname = $('#slPname').val();
-        var fname = $('#txtFname').val();
-        var lname = $('#txtLname').val();
-        var depcode = $('#slDepartment').val();
-        var level_user_id = $('#slLayer').val();
-        var id = $('#txtId').val();
-
-        if(username && password && pname && fname && lname && depcode && level_user_id){
-            if(id){
-                if (confirm('คุณต้องการแก้ไขรายการนี้ ใช่หรือไม่')) {
+        var name = $('#txtName').val();
+        var type = $('#slType_items').val();
+        var unit = $('#slUnit_items').val();
+        var status = $('#checkStatus').prop('checked') ? 'Y' : 'N';
+        var id2 = $('#txtId2').val();
+        if(name){
+            if(id2){
+                if(confirm('คุณต้องการแก้ไขรายการนี้ ใช่หรือไม่')) {
                     $.ajax({
                         method: 'POST',
-                        url: '/users/update_users',
+                        url: '/admin/update_items_in_type',
                         dataType: 'json',
                         data: {
-                            username: username,
-                            password: password,
-                            pname: pname,
-                            fname: fname,
-                            lname: lname,
-                            depcode: depcode,
-                            level_user_id: level_user_id,
-                            id: id
+                            name: name,
+                            type: type,
+                            unit: unit,
+                            status: status,
+                            id2: id2
                         }
                     })
                         .success(function (data) {
                             if (data.ok) {
                                 alert('แก้ไขเสร็จเรีนบร้อยแล้ว');
                                 $('#mdlNew').modal('hide');
-                                getUserList();
+                                getItems_type();
                             } else {
                                 console.log(data.msg);
                                 alert('ไม่สามารถบันทึได้')
@@ -234,39 +235,57 @@ $(function(){
                             alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
                         })
                 }}else{
-                if (confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
-                $.ajax({
-                    method:'POST',
-                    url:'/users/save_user',
-                    dataType:'json',
-                    data:{
-                        username: username,
-                        password: password,
-                        pname: pname,
-                        fname: fname,
-                        lname: lname,
-                        depcode: depcode,
-                        level_user_id: level_user_id
-                    }
-                })
-                    .success(function(data){
-                        if(data.ok) {
-                            alert('บันทึกเสร็จเรีนบร้อยแล้ว');
-                            $('#mdlNew').modal('hide');
-                            getUserList();
-                        } else {
-                            console.log(data.msg);
-                            alert('ไม่สามารถบันทึได้')
+                if(confirm('คุณต้องการเพิ่มรายการนี้ ใช่หรือไม่')) {
+                    $.ajax({
+                        method: 'POST',
+                        url: '/admin/save_items_in_type',
+                        dataType: 'json',
+                        data: {
+                            name: name,
+                            type: type,
+                            unit: unit,
+                            status: status
                         }
                     })
-                    .error(function(xhr, status, err){
-                        console.log(err);
-                        alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
-                    })
-            }
-            }} else {
-            alert('กรุณากรอกข้อมูลให้ครบ')
+                        .success(function (data) {
+                            if (data.ok) {
+                                alert('บันทึกเสร็จเรีนบร้อยแล้ว');
+                                $('#mdlNew').modal('hide');
+                                getItems_type();
+                            } else {
+                                console.log(data.msg);
+                                alert('ไม่สามารถบันทึได้')
+                            }
+                        })
+                        .error(function (xhr, status, err) {
+                            console.log(err);
+                            alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
+                        })
+                }}
+            //save
+        } else{
+            alert('กรุณาระบุชื่อวัสดุ')
         }
     });
-    getUserList();
+
+    $('#paging').fadeIn();
+    $('#btnSearch_Items').on('click', function(e){
+        e.preventDefault();
+        var data = {};
+        var search_items = $('#txtSearchItems').val();
+        data.items = search_items;
+
+        $.ajax({
+            type: "POST",
+            url: "/admin/search_items",
+            contentType:'application/json',
+            dataType:'json',
+            data: JSON.stringify(data)
+        })
+            .success(function(data){
+                setTable(data);
+                $('#paging').fadeOut();
+            })
+    });
+    getItems_type();
 });

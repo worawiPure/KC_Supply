@@ -5,9 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session =require('express-session');
-
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var admin = require('./routes/admin');
+var prints = require('./routes/prints');
 var app = express();
 
 // view engine setup
@@ -34,7 +35,7 @@ var db = require('knex')({
   connection: {
     host:'127.0.0.1',
     port:3306,
-    database:'opd',
+    database:'hrstock',
     user:'root',
     password:''
   }
@@ -59,6 +60,8 @@ app.use(function(req,res,next){
     next();
 });
 app.use('/users', users);
+app.use('/admin',auth, admin);
+app.use('/prints',auth, prints);
 app.use('/',auth, routes);
 
 

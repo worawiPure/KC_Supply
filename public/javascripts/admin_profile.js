@@ -5,17 +5,18 @@ $(function(){
         var data = {};
         data.id = $('#txtId').val();
         data.username = $('#txtUsername').val();
-        data.pname = $('#slPname').val();
-        data.fname = $('#txtName').val();
-        data.lname = $('#txtLname').val();
-        data.department = $('#slDepartment').val();
+        data.prefixnamel = $('#slPname').val();
+        data.name = $('#txtName').val();
+        data.surname = $('#txtLname').val();
+        data.depcode = $('#slDepartment').val();
 
-        if(!data.username|| !data.pname|| !data.fname || !data.lname || !data.department ) {
+        if(!data.username|| !data.prefixnamel|| !data.name || !data.surname || !data.depcode ) {
             $('#divAlert').fadeIn('slow');
             setTimeout(function () {
                 $('#divAlert').fadeOut('slow');
             }, 2000)
         } else {
+            if (confirm('คุณต้องการแก้ไขรายการนี้ ใช่หรือไม่')) {
             $.ajax({
                 type: "POST",
                 url: "/users/edit_user",
@@ -25,7 +26,7 @@ $(function(){
                 .success(function (data) {
                     if (data.ok) {
                         alert('บันทึกข้อมูลเรียบร้อยแล้ว');
-                        window.location.href="/users/admin_profile";
+                        window.location.href="/users/login";
                     } else {
                         $('#divDuplicated').fadeIn();
                         setTimeout(function () {
@@ -38,6 +39,7 @@ $(function(){
                 .error(function (xhr, status, err) {
                     alert("ไม่สามารถเชื่อมต่อกับแม่ข่ายได้")
                 })
+        }
         }
     });
 

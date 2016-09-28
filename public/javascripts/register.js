@@ -1,27 +1,6 @@
 $(function(){
-    //
-    //var getregister = function(){
-    //    $.ajax({
-    //        method:'GET',
-    //        url:'users/register',
-    //        dataType:'json'
-    //    })
-    //        .success(function(data){
-    //            if(data.ok) {
-    //                getregister();
-    //            } else {
-    //                alert('ติดต่อฐานไม่ได้')
-    //            }
-    //        })
-    //        .error(function(xhr, status, err){
-    //            console.log(err);
-    //            alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
-    //        })
-    //};
-
-
     $('#btnSaveregister').on('click', function(e){
-        //   console.log($(this).val());
+         console.log($(this).val());
         var data = {};
         data.username = $('#txtUsername').val();
         data.password = $('#txtPassword').val();
@@ -29,13 +8,15 @@ $(function(){
         data.fname = $('#txtName').val();
         data.lname = $('#txtLname').val();
         data.department = $('#slDepartment').val();
+        data.level_user = $('#slLayer').val();
 
-        if(!data.username|| !data.password || !data.pname|| !data.fname || !data.lname || !data.department ) {
+        if(!data.username|| !data.password || !data.pname || !data.fname || !data.lname || !data.department || !data.level_user ) {
             $('#divAlert').fadeIn('slow');
             setTimeout(function () {
                 $('#divAlert').fadeOut('slow');
             }, 2000)
         } else {
+        if (confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
             $.ajax({
                 type: "POST",
                 url: "/users/check_register",
@@ -53,12 +34,10 @@ $(function(){
                         }, 2000)
                         //alert(data.msg);
                     }
-
                 })
                 .error(function (xhr, status, err) {
                     alert("ไม่สามารถเชื่อมต่อกับแม่ข่ายได้")
                 })
-        }
+        }}
     });
-
-})
+});

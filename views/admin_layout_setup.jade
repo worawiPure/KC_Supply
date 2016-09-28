@@ -57,7 +57,7 @@ html
                         #navbar.navbar-collapse.collapse.navbar-responsive-collapse
                               ul.nav.navbar-nav
                                     li
-                                        a(href="/material_selection") หน้าแรก
+                                        a(href="/admin/bills_approve") หน้าแรก
                               p.navbar-text.navbar-right #{session.fullname} | #{session.depname}
                               ul.nav.navbar-nav.pull-right
                                  li.dropdown
@@ -65,7 +65,7 @@ html
                                     aria-haspopup="true", aria-expanded="false").dropdown-toggle
                                         i.fa.fa-user
                                     ul.dropdown-menu
-                                        //li
+                                        li
                                             a(href="/users/user_profile")
                                                 i.fa.fa-edit
                                                     | &nbsp;&nbsp; ข้อมูลส่วนตัว
@@ -85,22 +85,14 @@ html
                                     | &nbsp; เมนูหลัก
                         .panel-body
                             .ul.nav.nav-pills.nav-stacked
-                                  if session.level_user==2
-                                      li
-                                          a(href="/material_selection")
-                                              i.glyphicon.glyphicon-shopping-cart
-                                              | &nbsp; เบิกวัสดุ
-                                      li
-                                          a(href="/list_bills")
-                                              i.fa.fa-book
-                                              | &nbsp; รายการเบิกวัสดุทั้งหมด
-                                      li
-                                          a(href="/list_bills_receive_today")
-                                              i.fa.fa-reply
-                                              | &nbsp; รายการที่ต้องได้รับวัสดุวันนี้
-                                              .badge
-                                                span#dataTotal
-                .col-md-9
+                                  if session.level_user==1
+                                        li
+                                            a(href="/admin/set_unit")
+                                                i.fa.fa-book
+                                                | &nbsp; ตั้งค่าหน่วยวัสดุ
+                                        li
+                                            a(href="/admin/set_type")
+                                                i.fa.fa-book
+                                                | &nbsp; ตั้งค่าประเภทวัสดุ
+                .col-md-7
                   block content
-
-

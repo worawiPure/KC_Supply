@@ -1,0 +1,83 @@
+extends  ../admin_layout_setup
+block scripts
+    script(src="/javascripts/add_items_type_admin.js")
+block content
+    br
+    .well.well-sm#show_search
+        div.form-inline
+            .row
+                .col-md-12
+                    button.close(type='button', aria-label='Close')#close_search
+                        span(aria-hidden='true') &times;
+            .row
+                .col-md-8
+                    .form-group
+                        label ชื่อรายการ :
+                            | &nbsp;&nbsp;&nbsp;
+                            input#txtSearchItems.form-control(type="text")
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch_Items(type="button").btn.btn-inverse.btn-sm ค้นหา
+            br
+    .panel.panel-inverse#show_detail
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-comments-o
+                | &nbsp; เพิ่มวัสดุในประเภท : #{data.shows[0].kind_category}
+        .panel-body
+            buton.btn.btn-inverse.btn-sm.pull-right#btnShowModal
+                i.fa.fa-plus
+                | &nbsp; เพิ่มรายการวัสดุ
+            button.btn.btn-inverse.btn-sm.pull-right#btnShowSearch
+                i.fa.fa-search.fa-lg
+                | &nbsp; ค้นหา
+            input(type="hidden",value="#{data.id}")#txtId
+            table.table.table-hover#tblItems_type
+                thead
+                    tr
+                        td ลำดับ
+                        td รายการวัสดุ
+                        td หน่วย
+                        td
+                            i.fa.fa-cog.fa-spin.fa-3w.fa-fw
+                    tbody
+            ul.pagination#paging
+    .modal.fade#mdlNew(tabindex="-1",role="dialog")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-lable='Close')
+                        span(aria-hidden='true') &times;
+                    h4.modal-title  เพิ่ม/แก้ไขรายการ
+                .modal-body(style="padding-top: 20px;")
+                    input(type="hidden",value="")#txtId2
+                    .form-group.has-feedback
+                        label(for="txtName") รายการ :
+                        input(type="text")#txtName.form-control
+                    .form-group.has-feedback
+                        .row
+                            .col-md-5
+                                label(for="slUnit_items") เลือกหน่วยนับ :
+                                | &nbsp;
+                                select#slUnit_items.form-control.css-require
+                                    option(value="") กรุณาเลือกรายการ....
+                                    for a in data.roundels
+                                        option(value="#{a.id}") #{a.unitname}
+                            .col-md-6
+                                label(for="slType_items") เลือกประเภทวัสดุ :
+                                | &nbsp;
+                                select#slType_items.form-control.css-require
+                                    option(value="") กรุณาเลือกรายการ....
+                                    for b in data.kinds
+                                        option(value="#{b.id}") #{b.kind_category}
+                    .form-group
+                        label(for="checkboxStatus") สถานะเปิดใช้งาน :
+                        | &nbsp;&nbsp;&nbsp;
+                        label(value='', style='width:20%')
+                            input(type='checkbox')#checkStatus
+                            |  เปิดใช้งาน
+                    .modal-footer
+                        button.btn.btn-primary#btnSave
+                            i.fa.fa-save
+                            | &nbsp; บันทึก
+                        button.btn.btn-danger(data-dismiss="modal")
+                            | &nbsp; ปิดหน้าต่าง

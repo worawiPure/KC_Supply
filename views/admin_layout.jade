@@ -1,99 +1,170 @@
 doctype html
 html
   head
-    title OPD_service  verion 0.0.1
-    meta(charset="utf-8")
-    meta(http-equiv="X-UA-Compatible", content="IE=edge")
-    meta(name="viewport", content="width=device-width, initial-scale=1")
-    link(rel="stylesheet", href="/libs/bootstrap/dist/css/bootstrap.min.css")
-    link(rel="stylesheet", href="/libs/font-awesome/css/font-awesome.min.css")
-    link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/material.min.css")
-    link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/ripples.min.css")
-    link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/roboto.min.css")
-    link(rel="stylesheet", href="/libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css")
-    link(rel="stylesheet", href="/stylesheets/style.css")
-    link(rel="stylesheet", href="/libs/nprogress/nprogress.css")
-    script(src="/libs/jquery/dist/jquery.min.js")
-    script(src="/libs/bootstrap/dist/js/bootstrap.min.js")
-    script(src="/libs/bootstrap-material-design/dist/js/material.min.js")
-    script(src="/libs/bootstrap-material-design/dist/js/ripples.min.js")
-    script(src="/libs/paging/jquery.paging.min.js")
-    script(src="/libs/lodash/lodash.min.js")
-    script(src="/libs/moment/moment.js")
-    script(src="/libs/moment/min/moment-with-locales.js")
-    script(src="/libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js")
-    script(src="/libs/nprogress/nprogress.js")
-    script(src="/libs/js-xlsx/dist/xlsx.core.min.js")
-    script(src="/javascripts/app.js")
+        title KC_Supply  verion 2.0.0
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        link(rel="stylesheet", href="/libs/bootstrap/dist/css/bootstrap.min.css")
+        link(rel="stylesheet", href="/libs/font-awesome/css/font-awesome.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/material.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/ripples.min.css")
+        link(rel="stylesheet", href="/libs/bootstrap-material-design/dist/css/roboto.min.css")
+        link(rel="stylesheet", href="/libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css")
+        link(rel="stylesheet", href="/stylesheets/style.css")
+        link(rel="stylesheet", href="/libs/nprogress/nprogress.css")
+        script(src="/libs/jquery/dist/jquery.min.js")
+        script(src="/libs/bootstrap/dist/js/bootstrap.min.js")
+        script(src="/libs/bootstrap-material-design/dist/js/material.min.js")
+        script(src="/libs/bootstrap-material-design/dist/js/ripples.min.js")
+        script(src="/libs/paging/jquery.paging.min.js")
+        script(src="/libs/lodash/lodash.min.js")
+        script(src="/libs/moment/moment.js")
+        script(src="/libs/moment/min/moment-with-locales.js")
+        script(src="/libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js")
+        script(src="/libs/nprogress/nprogress.js")
+        script(src="/libs/js-xlsx/dist/xlsx.core.min.js")
+        script(src="/javascripts/app.js")
 
-    script.
-        $(function(){
-            $('[data-toggle="tooltip"]').tooltip();
-            $('input[readonly]').css('background-color', 'white');
-            $('input[disabled="disabled"]').css('background-color', 'white');
-            $('[data-datepicker]').datetimepicker({
-                locale: 'th',
-                format: 'DD/MM/YYYY'
-            });
-            $('[data-timepicker]').datetimepicker({
-                format: 'HH:mm'
-            });
-        })
-    block scripts
+        script.
+            $(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+                $('input[readonly]').css('background-color', 'white');
+                $('input[disabled="disabled"]').css('background-color', 'white');
+                $('[data-datepicker]').datetimepicker({
+                    locale: 'th',
+                    format: 'DD/MM/YYYY'
+                });
+                $('[data-timepicker]').datetimepicker({
+                    format: 'HH:mm'
+                });
+            })
+        block scripts
   body
-        nav.navbar.navbar-primary.navbar-fixed-top
-            .container
-                .navbar-header
-                    button(type="button", data-toggle="collapse", data-taget="#navbar",
-                    aria-expanded="false", aria-controls="navbar").navbar-toggle.collapsed
-                        span.sr-only Toggle navigation
-                        span.icon-bar
-                        span.icon-bar
-                    a.navbar-brand(href="/opd")
-                        i.fa.fa-spinner.fa-pulse.fa-2x.fa-fw
-                        | &nbsp; OPD Service_Time
-                #navbar.navbar-collapse.collapse
-                    ul.nav.navbar-nav.pull-right
-                        .btn-group
-                            a.btn.btn-primary(href='#')
-                                i.fa.fa-user.fa-fw
-                                |  #{session.fullname}
-                            a.btn.btn-default.dropdown-toggle(data-toggle='dropdown', href='#')
-                                span.fa.fa-caret-down(title='Toggle dropdown menu')
-                            ul.dropdown-menu
-                                li
-                                    a(href='/users/admin_profile')
-                                        i.fa.fa-pencil.fa-fw
-                                        |  ข้อมูลส่วนตัว
-                                li
-                                    a(href='/users/logout')
-                                        i.fa.fa-power-off.fa-fw
-                                        |  ออกจากระบบ
-        .container
-            .row
-                .col-md-2
-                    br
-                    #accordion.panel-group(role='tablist', aria-multiselectable='true')
-                        .panel.panel-primary
-                            #headingOne.panel-heading(role='tab')
-                                // .ul.nav.nav-pills.nav-stacked
-                                if session.level_user_id==2
-                                    li.active
-                                        h4.panel-title
-                                            a(style="color:white", role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseOne', aria-expanded='true', aria-controls='collapseOne')
-                                                i.fa.fa-download
-                                                | &nbsp; ส่งออกข้อมูล
-                            #collapseOne.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingOne')
-                                .panel-body
-                                    .ul.nav.nav-pills.nav-stacked
-                                        if session.level_user_id==2
-                                            li
-                                                a(href="#")#send_block_report_normal
-                                                    i.fa.fa-user-md
-                                                    | &nbsp; ตรวจทั่วไป
-                                            li
-                                                a(href="#")#send_block_report_special
-                                                    i.fa.fa-user-md
-                                                    | &nbsp; ตรวจพิเศษ
-                .col-md-9
-                    block content
+      nav.navbar.navbar-inverse.navbar-fixed-top
+          .container
+              .navbar-header
+                  button(type="button", data-toggle="collapse", data-taget="#navbar",
+                  aria-expanded="false", aria-controls="navbar").navbar-toggle.collapsed
+              span.sr-only Toggle navigation
+              span.icon-bar
+              span.icon-bar
+              a.navbar-brand(href="#")
+                  i.glyphicon.glyphicon-shopping-cart
+                  | &nbsp; KC_Supply
+              #navbar.navbar-collapse.collapse.navbar-responsive-collapse
+                  ul.nav.navbar-nav
+                      li
+                          a(href="/admin/bills_approve") หน้าแรก
+                  p.navbar-text.navbar-right #{session.fullname} | #{session.depname}
+                  ul.nav.navbar-nav.pull-right
+                      li.dropdown
+                          a(href="#", data-toggle="dropdown", role="button",
+                          aria-haspopup="true", aria-expanded="false").dropdown-toggle
+                              i.fa.fa-user
+                          ul.dropdown-menu
+                              li
+                                  a(href="/users/admin_profile")
+                                      i.fa.fa-edit
+                                          | &nbsp;&nbsp; ข้อมูลส่วนตัว
+                              li
+                                  a(href="/users/logout")
+                                      i.fa.fa-power-off
+                                      | &nbsp;&nbsp;ออกจากระบบ
+      .container
+          .row
+              .col-md-4
+                  br
+                  .panel.panel-inverse
+                      .panel-heading
+                          h3.panel-title
+                                  i.fa.fa-tags
+                                  | &nbsp; จัดการเบิกวัสดุ
+                      .panel-body
+                          .ul.nav.nav-pills.nav-stacked
+                              if session.level_user==1
+                                  li
+                                      a(href="/admin/list_bills_today_admin")
+                                          i.fa.fa-book
+                                          | &nbsp; อนุมัติเบิกวัสดุวันนี้
+                                          .badge
+                                              span#dataTotal
+                                  li
+                                      a(href="/admin/list_bills_not_approve")
+                                          i.fa.fa-book
+                                          | &nbsp; รายการเบิกวัสดุที่ยังไม่อนุมัติ
+                                          .badge
+                                              span#dataTotal2
+                                  li
+                                      a(href="/admin/list_bills_approve")
+                                          i.fa.fa-book
+                                          | &nbsp; รายการเบิกวัสดุที่อนุมัติแล้ว
+                                  li
+                                      a(href="/admin/list_bills_payable")
+                                          i.fa.fa-book
+                                          | &nbsp; รายการเบิกวัสดุค้างจ่าย
+              .col-md-3
+                  br
+                  .panel.panel-inverse
+                      .panel-heading
+                          h3.panel-title
+                                  i.fa.fa-tags
+                                  | &nbsp; ระบบรายงาน
+                      .panel-body
+                          .ul.nav.nav-pills.nav-stacked
+                              if session.level_user==1
+                                  li
+                                      a(href="/admin/list_bills_receive_today")
+                                          i.fa.fa-file-text
+                                          | &nbsp; จำนวนวัสดุที่เบิกตามช่วงเวลา
+                                  li
+                                      a(href="/admin/list_bills_receive_today")
+                                          i.fa.fa-file-text
+                                          | &nbsp; จำนวนวัสดุที่เบิกแยกตามแผนก
+                                  li
+                                      a(href="/admin/list_bills_receive_today")
+                                          i.fa.fa-line-chart
+                                          | &nbsp; กราฟ
+              .col-md-3
+                  br
+                  .panel.panel-inverse
+                      .panel-heading
+                          h3.panel-title
+                              i.fa.fa-tags
+                              | &nbsp; ตั้งค่ารายการ
+                      .panel-body
+                          .ul.nav.nav-pills.nav-stacked
+                              if session.level_user==1
+                                  li
+                                      a(href="/admin/set_unit")
+                                          i.fa.fa-cogs
+                                          | &nbsp; ตั้งค่าหน่วยนับวัสดุ
+                                  li
+                                      a(href="/admin/set_type")
+                                          i.fa.fa-cogs
+                                          | &nbsp; ตั้งค่าประเภทวัสดุ
+                                  li
+                                      a(href="#")
+
+              .col-md-2
+                  br
+                  .panel.panel-inverse
+                      .panel-heading
+                          h3.panel-title
+                              i.fa.fa-tags
+                              | &nbsp; จัดการผู้ใช้งาน
+                      .panel-body
+                          .ul.nav.nav-pills.nav-stacked
+                              if session.level_user==1
+                                  li
+                                      a(href="/users/user")
+                                          i.fa.fa-users
+                                          | &nbsp; ผู้ใช้งาน
+                                  li
+                                      a(href="#")
+                                  li
+                                      a(href="#")
+
+
+              //.col-md-9
+                  block content

@@ -1,0 +1,66 @@
+extends  ../admin_layout_approve
+
+block scripts
+    script(src="/javascripts/list_bills_not_approve_admin.js")
+    script(src="/javascripts/total_bills_approve_today.js")
+    script(src="/javascripts/total_bills_not_approve.js")
+block content
+    br
+    .panel.panel-inverse#show_list_bills
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-list
+                | &nbsp; รายการเบิกวัสดุยังไม่ได้รับการอนุมัติ
+        .panel-body
+            table.table.table-hover#tbl_list_bills
+                thead
+                    tr
+                        td ลำดับ
+                        td(style="width : 160px") bill_no
+                        td วันที่ทำรายการ
+                        td วันที่รับรายการ
+                        td แผนก
+                        td สถานะอนุมัติรายการ
+                        td
+                            i.fa.fa-cog.fa-spin.fa-3w.fa-fw
+                    tbody
+            ul.pagination#paging
+    .modal.fade#mdlNew(tabindex="-1",role="dialog")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') &times;
+                    h4.modal-title อนุมัติรายการ
+                    br
+                    div.form-inline
+                        .row
+                            .col-md-12
+                                input(type="hidden")#txtId
+                                .form-group
+                                    label(for="#txtBill") เลขที่บิล :
+                                        | &nbsp;&nbsp;
+                                        input(type="text" readonly)#txtBill.form-control
+                                    | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    label(for="#txtDepartment") แผนก :
+                                        | &nbsp;&nbsp;
+                                        input(type="text" readonly)#txtDepartment.form-control
+                .modal-body(style="padding-top: 20px;")
+                    .row
+                        .col-md-12
+                            table.table.table-hover#tbl_items_approve
+                                thead
+                                    tr
+                                        td(style="width:10px") ลำดับ
+                                        td รายการ
+                                        td สั่ง
+                                        td จ่าย
+                                        td หน่วย
+                                tbody
+                .modal-footer
+                    button.btn.btn-primary#btnAdd_approve
+                        i.fa.fa-save
+                        | &nbsp; อนุมัติ
+                    button.btn.btn-danger(data-dismiss="modal")
+                        i.fa.fa-close
+                        | &nbsp; ปิดหน้าต่าง

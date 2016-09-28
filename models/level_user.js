@@ -4,7 +4,7 @@ module.exports = {
 
     getList: function(db){
         var q = Q.defer();
-        db('risk_leveluser')
+        db('tb_user_level')
             .select()
             .then(function (rows){
                 q.resolve(rows);

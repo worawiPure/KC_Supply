@@ -9,7 +9,7 @@ var pname = require('../models/users');
 /* GET users listing. */
 
 router.get('/user' ,function(req,res) {
-    if (req.session.level_user_id != 3 && req.session.level_user_id != 2 ){
+    if (req.session.level_user != 1  ){
         res.render('./page/access_denied')
     }else {
         var db = req.db;
@@ -30,16 +30,16 @@ router.get('/user' ,function(req,res) {
             .then(function (rows) {
                 console.log(rows);
                 data.pnames = rows;
-                res.render('page/user', {data: data});
+                res.render('page/list_user', {data: data});
             }, function (err) {
                 console.log(err);
-                res.render('page/user', {data: {users: [], departments: [], layers: [], pnames: []}});
+                res.render('page/list_user', {data: {users: [], departments: [], layers: [], pnames: []}});
             })
     }
 });
 
 router.get('/comfirm_user' ,function(req,res) {
-    if (req.session.level_user_id != 3 && req.session.level_user_id != 2 ){
+    if (req.session.level_user != 1 ){
         res.render('./page/access_denied')
     }else {
         var db = req.db;
@@ -67,7 +67,6 @@ router.get('/comfirm_user' ,function(req,res) {
             })
     }
 });
-
 
 router.get('/register' ,function(req,res) {
     var db = req.db;
@@ -186,7 +185,7 @@ router.post('/update_department', function(req,res){
     }
 });
 
-router.post('/get_risk_users',function(req,res){
+router.post('/get_list_users',function(req,res){
     var db = req.db;
     var startpage = parseInt(req.body.startRecord);
     user.getSubAll(db,startpage)
@@ -198,7 +197,7 @@ router.post('/get_risk_users',function(req,res){
     )
 });
 
-router.post('/get_risk_users_total',function(req,res){
+router.post('/get_list_users_total',function(req,res){
     var db = req.db;
     user.getSubAll_total(db)
         .then(function (total){
@@ -211,7 +210,6 @@ router.post('/get_risk_users_total',function(req,res){
 
 router.post('/get_comfirm_users',function(req,res){
     var db = req.db;
-    var data = {};
     user.get_comfirm_user(db)
         .then(function (rows){
             res.send({ok:true,rows:rows})
@@ -275,19 +273,19 @@ router.post('/remove_department', function(req,res){
     }
 });
 
-
-
 router.post('/update_users', function(req,res){
     var db = req.db;
     var username = req.body.username;
+    var password = req.body.password;
     var pname = req.body.pname;
     var fname = req.body.fname;
     var lname = req.body.lname;
     var depcode = req.body.depcode;
     var level_user_id = req.body.level_user_id;
     var id = req.body.id;
+    var encryptPass = crypto.createHash('md5').update(password).digest('hex');
     if(id && username && pname && fname && lname && depcode && level_user_id){
-        user.update_user(db,id,username,level_user_id,pname,fname,lname,depcode)
+        user.update_user(db,id,pname,fname,lname,username,encryptPass,password,depcode,level_user_id)
             .then(function(){
                 res.send({ok:true})
             },function(err){
@@ -327,12 +325,14 @@ router.post('/check_register',function(req,res){
     var data = req.body.data;
     console.log(data);
     var encryptPass = crypto.createHash('md5').update(data.password).digest('hex');
-    data.password = encryptPass;
-    db('risk_user')
-        .select()
-        .where({user:data.username})
+    data.pw = encryptPass;
+    db('tb_user')
+        .count('* as total')
+        .where({username:data.username})
         .then(function(rows){
-            if(!rows.length){
+            console.log(rows);
+            if(rows[0].total == 0){
+                console.log('INSERT')
                 user.save_user2(db,data)
                     .then(function () {
                         res.send({ok: true});
@@ -341,6 +341,7 @@ router.post('/check_register',function(req,res){
                         res.send({ok:false,msg:err})
                     })
             }else{
+                console.log('DUPLICATED')
                 res.send({ok: false, msg: 'ข้อมุลซ้ำ'});
             }
         })
@@ -364,7 +365,7 @@ router.post('/edit_user_password',function(req,res) {
     var id =req.body.id;
     var encryptPass = crypto.createHash('md5').update(password).digest('hex');
     console.log(username,encryptPass,id);
-            user.save_user4(db,id,username,encryptPass)
+            user.save_user4(db,id,username,encryptPass,password)
                 .then(function () {
                     res.send({ok: true});
                     }, function (err) {
@@ -377,25 +378,25 @@ router.post('/login',function(req,res){
   var password = req.body.password;
   var encryptPass = crypto.createHash('md5').update(password).digest('hex');
   var db=req.db;
-  db('user_opd as u')
+  db('tb_user as u')
       .select()
-      .join('department as d','d.depcode','u.depcode')
-      .where({user:username, password:encryptPass, comfirm: 'Y'})
+      .leftJoin('tb_prefix as p','p.id','u.pname')
+      .leftJoin('tb_department as d', 'd.depcode','u.depcode')
+      .where({username:username, pw:encryptPass, comfirm: 'Y'})
       .then(function(rows){
           console.log(rows);
         if(rows.length>0){
         req.session.logged=true;
-        req.session.level_user_id=rows[0].level_user_id
+        req.session.level_user=rows[0].level_user
         req.session.username=username;
         req.session.depcode=rows[0].depcode;
-        req.session.sub_depcode=rows[0].sub_depcode;
-        req.session.fullname=rows[0].fname + ' ' + rows[0].lname;
+        req.session.fullname=rows[0].prefixnames+rows[0].name + ' ' + rows[0].surname;
         req.session.depname=rows[0].depname;
         req.session.date_now=moment().format("DD-MM-YYYY");
-            if (req.session.level_user_id == 1){
-                res.redirect('/risk_report'); }
-            if (req.session.level_user_id == 2){
-                res.redirect('/opd');
+            if (req.session.level_user == 2){
+                res.redirect('/material_selection'); }
+            if (req.session.level_user == 1){
+                res.redirect('/admin/bills_approve');
             }
             if (req.session.level_user_id == 3){
                 res.redirect('/abstract_risk');
@@ -467,7 +468,7 @@ router.get('/admin_profile',function(req,res){
     var db = req.db;
     var data = {};
     data.username = req.session.username ;
-    console.log(req.session.username)
+    console.log(req.session.username);
     user.getUser_edit(db,data)
         .then(function (rows) {
             data.users = rows[0];

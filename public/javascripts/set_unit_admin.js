@@ -1,42 +1,37 @@
 $(function(){
+
     var setTable = function(data){
-        var $tblUser = $('#tblUsers > tbody');
-        $tblUser.empty();
+        var $tblRisk = $('#tblUnit > tbody');
+        $tblRisk.empty();
         var i=0;
         _.forEach(data.rows, function(v){
             i++;
             var html = '<tr> ' +
                 '<td> ' + i + ' </td>'+
-                '<td> ' + v.Nameuser + ' </td>'+
-                '<td> ' + v.username + ' </td>'+
-                '<td> ' + v.statusname + ' </td>'+
-                '<td> ' + v.depname + ' </td>'+
+                '<td> ' + v.unitname + ' </td>'+
                 '<td> '+
                 '   <div class="btn-group btn-group-sm" role="group"> '+
                 '<button  class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> '+
                 '<i class="fa fa-cogs"> </i> </button> '+
                 '<ul class="dropdown-menu"> '+
                 '<li> '+
-                '<a href="#" data-action="edit" data-id="'+ v.id +'" data-username="'+ v.username +'" data-password="'+ v.pwfix +'" ' +
-                ' data-pname="'+ v.pname +'"  data-fname="'+ v.name +'"  data-lname="'+ v.surname +'"  data-depcode="'+ v.depcode +'" ' +
-                'data-level_user="'+ v.statususer +'" ) > '+
+                '<a href="#" data-action="edit" data-name="'+ v.unitname +'" data-id="'+ v.id +'") > '+
                 '<i class="fa.fa-edit"> </i> แก้ไข </a></li> '+
                 '<li> '+
                 '<a href="#" data-action="remove" data-id="'+ v.id +'">'+
                 '<i class="fa fa-trash"> </i>ลบ </a></li></ul></div> ';
-            $tblUser.append(html);
-
+            $tblRisk.append(html);
         })
     };
 
-    var getUserList = function(){
+    var getUnit = function(){
         $.ajax({
             method:'POST',
-            url:'/users/get_list_users_total',
+            url:'/admin/get_unit_total',
             dataType:'json'
-
         })
             .success(function(data){
+                //setTable(data);
                 $("#paging").paging(data.total, {
                     format: "< . (qq -) nnncnnn (- pp) . >",
                     perpage: 5,
@@ -47,14 +42,13 @@ $(function(){
                         console.log(this.slice);
                         $.ajax({
                             method:'POST',
-                            url:'/users/get_list_users',
+                            url:'/admin/get_unit_page',
                             dataType:'json',
                             contentType:'application/json',
                             data: JSON.stringify({startRecord:startRecord})
                         })
                             .success(function(data){
                                 setTable(data);
-                                console.log(data)
                             })
                         // Index.getService(start, end, startRecord, function (err, rows) {
                         //     if (err) console.log(err);
@@ -124,7 +118,7 @@ $(function(){
         if(confirm('คุณต้องการลบรายการนี้ ใช่หรือไม่')){
             $.ajax({
                 method:'POST',
-                url:'/users/remove_users',
+                url:'/admin/remove_unit',
                 dataType:'json',
                 data:{
                     id:id
@@ -133,7 +127,7 @@ $(function(){
                 .success(function(data){
                     if(data.ok) {
                         alert('ลบเสร็จเรีนบร้อยแล้ว');
-                        getUserRisk()
+                        getUnit();
                     } else {
                         console.log(data.msg);
                         alert('ไม่สามารถบันทึได้')
@@ -148,22 +142,10 @@ $(function(){
 
     $(document).on('click','a[data-action="edit"]',function(e){
         e.preventDefault();
-        var username = $(this).data('username');
-        var password = $(this).data('password');
-        var pname = $(this).data('pname');
-        var fname = $(this).data('fname');
-        var lname = $(this).data('lname');
-        var depcode = $(this).data('depcode');
-        var level_user = $(this).data('level_user');
+        var name = $(this).data('name');
         var id = $(this).data('id');
 
-        $('#txtUsername').val(username);
-        $('#txtPassword').val(password);
-        $('#slPname').val(pname);
-        $('#txtFname').val(fname);
-        $('#txtLname').val(lname);
-        $('#slDepartment').val(depcode);
-        $('#slLayer').val(level_user);
+        $('#txtName').val(name);
         $('#txtId').val(id);
         $("#mdlNew").modal({
             backdrop:'static',
@@ -178,44 +160,24 @@ $(function(){
             keyboard:false
         })
     });
-
     $('#mdlNew').on('hidden.bs.modal', function (e) {
-        $('#txtUsername').val('');
-        $('#txtPassword').val('');
-        $('#slPname').val('');
-        $('#txtFname').val('');
-        $('#txtLname').val('');
-        $('#slDepartment').val('');
-        $('#slLayer').val('');
+        $('#txtName').val('');
         $('#txtId').val('');// do something...
     });
 
     $('#btnSave').on('click',function(e){
         e.preventDefault();
-        var username = $('#txtUsername').val();
-        var password = $('#txtPassword').val();
-        var pname = $('#slPname').val();
-        var fname = $('#txtFname').val();
-        var lname = $('#txtLname').val();
-        var depcode = $('#slDepartment').val();
-        var level_user_id = $('#slLayer').val();
+        var name = $('#txtName').val();
         var id = $('#txtId').val();
-
-        if(username && password && pname && fname && lname && depcode && level_user_id){
+        if(name){
             if(id){
-                if (confirm('คุณต้องการแก้ไขรายการนี้ ใช่หรือไม่')) {
+                if(confirm('คุณต้องการแก้ไขรายการนี้ ใช่หรือไม่')) {
                     $.ajax({
                         method: 'POST',
-                        url: '/users/update_users',
+                        url: '/admin/update_unit',
                         dataType: 'json',
                         data: {
-                            username: username,
-                            password: password,
-                            pname: pname,
-                            fname: fname,
-                            lname: lname,
-                            depcode: depcode,
-                            level_user_id: level_user_id,
+                            name: name,
                             id: id
                         }
                     })
@@ -223,7 +185,7 @@ $(function(){
                             if (data.ok) {
                                 alert('แก้ไขเสร็จเรีนบร้อยแล้ว');
                                 $('#mdlNew').modal('hide');
-                                getUserList();
+                                getUnit();
                             } else {
                                 console.log(data.msg);
                                 alert('ไม่สามารถบันทึได้')
@@ -234,39 +196,34 @@ $(function(){
                             alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
                         })
                 }}else{
-                if (confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
-                $.ajax({
-                    method:'POST',
-                    url:'/users/save_user',
-                    dataType:'json',
-                    data:{
-                        username: username,
-                        password: password,
-                        pname: pname,
-                        fname: fname,
-                        lname: lname,
-                        depcode: depcode,
-                        level_user_id: level_user_id
-                    }
-                })
-                    .success(function(data){
-                        if(data.ok) {
-                            alert('บันทึกเสร็จเรีนบร้อยแล้ว');
-                            $('#mdlNew').modal('hide');
-                            getUserList();
-                        } else {
-                            console.log(data.msg);
-                            alert('ไม่สามารถบันทึได้')
+                if(confirm('คุณต้องการเพิ่มรายการนี้ ใช่หรือไม่')) {
+                    $.ajax({
+                        method: 'POST',
+                        url: '/admin/save_unit',
+                        dataType: 'json',
+                        data: {
+                            name: name
                         }
                     })
-                    .error(function(xhr, status, err){
-                        console.log(err);
-                        alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
-                    })
-            }
-            }} else {
-            alert('กรุณากรอกข้อมูลให้ครบ')
+                        .success(function (data) {
+                            if (data.ok) {
+                                alert('บันทึกเสร็จเรีนบร้อยแล้ว');
+                                $('#mdlNew').modal('hide');
+                                getUnit();
+                            } else {
+                                console.log(data.msg);
+                                alert('ไม่สามารถบันทึได้')
+                            }
+                        })
+                        .error(function (xhr, status, err) {
+                            console.log(err);
+                            alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
+                        })
+                }}
+            //save
+        } else{
+            alert('กรุณาระบุหน่วยวัสดุ')
         }
     });
-    getUserList();
-});
+    getUnit();
+})

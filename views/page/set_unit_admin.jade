@@ -1,0 +1,41 @@
+extends  ../admin_layout_setup
+block scripts
+    script(src="/javascripts/set_unit_admin.js")
+block content
+    br
+    .panel.panel-inverse#show_detail
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-comments-o
+                | &nbsp; ตั้งค่าหน่วยนับวัสดุ
+        .panel-body
+            buton.btn.btn-inverse.btn-sm.pull-right#btnShowModal
+                i.fa.fa-plus
+                | &nbsp; เพิ่มรายการ
+            table.table.table-hover#tblUnit
+                thead
+                    tr
+                        td ลำดับ
+                        td รายการ
+                        td
+                            i.fa.fa-cog.fa-spin.fa-3w.fa-fw
+                    tbody
+            ul.pagination#paging
+    .modal.fade#mdlNew(tabindex="-1",role="dialog")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-lable='Close')
+                        span(aria-hidden='true') &times;
+                    h4.modal-title  เพิ่ม/แก้ไขรายการ
+                .modal-body(style="padding-top: 20px;")
+                    input(type="hidden",value="")#txtId
+                    .form-group
+                        label(for="txtName") รายการ
+                        input(type="text")#txtName.form-control
+                    .modal-footer
+                        button.btn.btn-primary#btnSave
+                            i.fa.fa-save
+                            | &nbsp; บันทึก
+                        button.btn.btn-danger(data-dismiss="modal")
+                            | &nbsp; ปิดหน้าต่าง

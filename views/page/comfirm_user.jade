@@ -1,19 +1,15 @@
-extends  ../admin_layout
+extends  ../admin_layout_user
 block scripts
     script(src="/javascripts/comfirm_users.js")
 block content
     br
-    ol.breadcrumb
-        li
-            a(href="/users/user") หน้าหลัก
-        li.active รายการยืนยันผู้ใช้งาน
-    .panel.panel-primary
+    .panel.panel-inverse
         .panel-heading
             h3.panel-title
                 i.fa.fa-comments-o
                 | &nbsp; รายการผู้ใช้งานรอการยืนยัน
         .panel-body
-            table.table.striped#tblRiskUsers
+            table.table.striped#tblC_Users
                 thead
                     tr
                         td ลำดับ

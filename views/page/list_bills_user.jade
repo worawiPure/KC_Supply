@@ -1,0 +1,82 @@
+extends  ../layout
+
+block scripts
+    script(src="/javascripts/list_bills_user.js")
+    script(src="/javascripts/total_bills_receive_user.js")
+block content
+    br
+    .well.well-sm#show_search
+        div.form-inline
+            .row
+                .col-md-12
+                    button.close(type='button', aria-label='Close')#close_search
+                        span(aria-hidden='true') &times;
+            .row
+                .col-md-12
+                    .form-group
+                        label วันที่
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        #datetimepicker1.input-group(data-datepicker)
+                            input#Date_Search1.form-control(type='text')
+                            span.input-group-addon
+                                span.glyphicon.glyphicon-calendar
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        label ถึง
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        #datetimepicker2.input-group(data-datepicker)
+                            input#Date_Search2.form-control(type='text')
+                            span.input-group-addon
+                                span.glyphicon.glyphicon-calendar
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch_date(type="button").btn.btn-inverse.btn-sm ค้นหา
+            .row
+                .col-md-8
+                    .form-group
+                        label เลขที่บิล :
+                            | &nbsp;&nbsp;&nbsp;
+                            input#txtSearchBills_no.form-control(type="text")
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch_bills(type="button").btn.btn-inverse.btn-sm ค้นหา
+            br
+    .panel.panel-inverse#show_list_bills
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-list
+                | &nbsp; รายการเบิกวัสดุจ่ายกลาง
+        .panel-body
+            button.btn.btn-xs.btn-inverse.pull-right#btnShowSearch
+                i.fa.fa-search.fa-lg
+                | &nbsp; ค้นหา
+        .panel-body
+            table.table.table-hover#tbl_list_bills
+                thead
+                    tr
+                        td ลำดับ
+                        td(style="width : 160px") bill_no
+                        td วันที่ทำรายการ
+                        td วันที่รับรายการ
+                        td สถานะอนุมัติรายการ
+                        td
+                            i.fa.fa-cog.fa-spin.fa-3w.fa-fw
+                    tbody
+            ul.pagination#paging
+    .modal.fade#mdlNew(tabindex="-1",role="dialog")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') &times;
+                    h4.modal-title สรุปความเสี่ยง
+                .modal-body(style="padding-top: 20px;")
+                    input(type="hidden")#txtId
+                    input(type="hidden" value="")#txtId_detail
+                    .form-group
+                        label(for="txtDetail") เพิ่ม/แก้ไข สรุปความเสี่ยง
+                        textarea#txtdetail(type="text", rows="10", placeholder="ยังไม่มีรายละเอียด").form-control
+                .modal-footer
+                    button.btn.btn-primary#btnAdd
+                        i.fa.fa-save
+                        | &nbsp; บันทึก
+                    button.btn.btn-danger(data-dismiss="modal")
+                        i.fa.fa-close
+                        | &nbsp; ปิดหน้าต่าง

@@ -3,7 +3,7 @@ var Q = require('q');
 module.exports = {
   getList: function(db){
       var q = Q.defer();
-      db('department')
+      db('tb_department')
           .select('id','depname','depcode')
           .orderBy('depcode','ASC')
           .then(function (rows){

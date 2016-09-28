@@ -1,0 +1,25 @@
+extends  ../layout
+
+block scripts
+    script(src="/javascripts/bills_receive_today_user.js")
+    script(src="/javascripts/total_bills_receive_user.js")
+block content
+    br
+    .panel.panel-inverse#show_list_bills
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-list
+                | &nbsp; รายการเบิกวัสดุจ่ายกลาง
+        .panel-body
+            table.table.table-hover#tbl_list_bills
+                thead
+                    tr
+                        td ลำดับ
+                        td(style="width : 160px") bill_no
+                        td วันที่ทำรายการ
+                        td วันที่รับรายการ
+                        td สถานะอนุมัติรายการ
+                        td
+                            i.fa.fa-cog.fa-spin.fa-3w.fa-fw
+                    tbody
+            ul.pagination#paging
