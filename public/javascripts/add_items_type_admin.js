@@ -273,7 +273,9 @@ $(function(){
         e.preventDefault();
         var data = {};
         var search_items = $('#txtSearchItems').val();
+        var id = $('#txtId').val();
         data.items = search_items;
+        data.id = id;
 
         $.ajax({
             type: "POST",

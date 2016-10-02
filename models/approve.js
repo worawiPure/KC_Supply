@@ -608,9 +608,11 @@ module.exports = {
         var sql =   'SELECT t.*,IF(t.status="","Y","N") AS sta,u.unitname  FROM  stock_tb_kind_type t '+
             'LEFT JOIN stock_tb_unit u ON u.id=t.unitid '+
             'WHERE t.kind_name Like ? '+
+            'AND t.kind_category_id = ? '+
             'ORDER BY t.kind_name DESC';
         var query = '%'+data.items+'%';
-        db.raw(sql,[query])
+        var query2 = ''+data.id+'';
+        db.raw(sql,[query,query2])
             //var sql = db.raw(sql,[data.date,data.username]).toSQL() คำสั่งเช็ค ค่า และคำสั่ง SQL
             .then(function(rows){
                 console.log(rows[0]);

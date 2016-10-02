@@ -85,7 +85,7 @@ module.exports = {
 
     remove_user: function(db,id){
         var q = Q.defer();
-        db('user_opd')
+        db('tb_user')
             .delete()
             .where('id',id)
             .then(function(){

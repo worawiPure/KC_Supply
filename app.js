@@ -9,6 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin');
 var prints = require('./routes/prints');
+var reports = require('./routes/reports');
 var app = express();
 
 // view engine setup
@@ -62,8 +63,8 @@ app.use(function(req,res,next){
 app.use('/users', users);
 app.use('/admin',auth, admin);
 app.use('/prints',auth, prints);
+app.use('/reports',auth,reports);
 app.use('/',auth, routes);
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

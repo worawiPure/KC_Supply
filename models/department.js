@@ -14,8 +14,7 @@ module.exports = {
           }) ;
           return q.promise;
   },
-
-    getList_Department: function(db,depcode){
+  getList_Department: function(db,depcode){
       var q = Q.defer();
       db('department')
           .select('id','depname','depcode')
@@ -29,9 +28,9 @@ module.exports = {
           return q.promise;
   },
 
-    getSubList: function(db){
-        var q = Q.defer();
-        db('department')
+  getSubList: function(db){
+      var q = Q.defer();
+      db('department')
             .select('depcode')
             .orderBy('depcode','ASC')
             .then(function (rows){
@@ -43,9 +42,9 @@ module.exports = {
         return q.promise;
     },
 
-    save_department: function(db,depname,depcode){
-        var q = Q.defer();
-        db('department')
+  save_department: function(db,depname,depcode){
+      var q = Q.defer();
+      db('department')
             .insert({depname:depname,depcode:depcode})
             .then(function (rows) {
                 q.resolve(rows);
@@ -53,10 +52,10 @@ module.exports = {
             .catch(function(db){
                 q.reject(err);
             });
-        return q.promise;
-    },
+      return q.promise;
+},
 
-    remove_department: function(db,id){
+  remove_department: function(db,id){
         var q = Q.defer();
         db('department')
             .delete()

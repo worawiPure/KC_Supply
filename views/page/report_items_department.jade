@@ -1,0 +1,61 @@
+extends  ../report_layout
+block scripts
+    script(src="/javascripts/report_items_department.js")
+block content
+    br
+    .alert.alert-warning(role="alert",style="display: none;")#divAlert
+        i.fa.fa-warning
+        | &nbsp; กรองข้อมูลวันที่ไม่ถูกต้อง
+    .well.well-sm
+        div.form-inline
+            .row
+                .col-md-12
+                    .form-group
+                        label วันที่
+                        | &nbsp;&nbsp;&nbsp;&nbsp;
+                        #datetimepicker1.input-group(data-datepicker)
+                            input#Date_Search1.form-control(type='text')
+                            span.input-group-addon
+                                span.glyphicon.glyphicon-calendar
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        label ถึง
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        #datetimepicker2.input-group(data-datepicker)
+                            input#Date_Search2.form-control(type='text')
+                            span.input-group-addon
+                                span.glyphicon.glyphicon-calendar
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        label ประเภทวัสดุ :
+                        | &nbsp;&nbsp;
+                        select.form-control#slDepartment
+                            option(value="") กรุณาเลือกรายการ....
+                            for a in data.departments
+                                option(value="#{a.depcode}") #{a.depname}
+                        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        button#btnSearch(type="button").btn.btn-inverse.btn-sm ค้นหา
+                        button#btnPrint(type="button").btn.btn-inverse.btn-sm ปริ้น
+    .panel.panel-inverse
+        .panel-heading
+            h3.panel-title
+                i.fa.fa-comments-o
+                | &nbsp; รายงานจำนวนวัสดุที่เบิกแยกแผนก
+        .panel-body
+            table.table.striped#tblReport_items_department
+                thead
+                    tr
+                        td ลำดับ
+                        td รายการ
+                        td มค.
+                        td กพ.
+                        td มีค.
+                        td เมษ.
+                        td พค.
+                        td มิย.
+                        td กค.
+                        td สค.
+                        td กย.
+                        td ตค.
+                        td พย.
+                        td ธค.
+                    tbody
+            ul.pagination#paging

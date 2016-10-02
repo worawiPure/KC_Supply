@@ -133,7 +133,7 @@ $(function(){
                 .success(function(data){
                     if(data.ok) {
                         alert('ลบเสร็จเรีนบร้อยแล้ว');
-                        getUserRisk()
+                        getUserList();
                     } else {
                         console.log(data.msg);
                         alert('ไม่สามารถบันทึได้')

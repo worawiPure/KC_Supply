@@ -27,7 +27,7 @@ router.get('/bills_approve', function(req, res, next) {
     } else {
         res.render('./page/menu_admin');
     }
-    });
+});
 
 router.get('/list_bills_today_admin', function(req, res, next) {
     if (req.session.level_user != 1){
@@ -643,6 +643,7 @@ router.post('/search_items',function(req,res){
     var db = req.db;
     var data = {};
     data.items = req.body.items;
+    data.id = req.body.id;
     console.log(data);
     show.getSearch_items(db,data)
         .then(function(rows){
