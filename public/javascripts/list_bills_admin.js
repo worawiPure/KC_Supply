@@ -137,10 +137,10 @@ $(function(){
                             '<td> ' + i + ' </td>' +
                             '<td> ' + v.kind_name + ' </td>' +
                             '<td><center>' +
-                            '<input  data-name="txt_number"  name="qty" style="width:60px" value="'+ v.qty +'" readonly>' +
+                            '<input  data-name="txt_qty"  type="number" name="qty" style="width:60px" value="'+ v.qty +'" readonly>' +
                             '</center></td>' +
                             '<td><center>' +
-                            '<input  data-name="txt_number" type="number" name="pay" style="width:60px" value="'+ v.qty +'">' +
+                            '<input  data-name="number_pay" type="number" name="pay" style="width:60px" value="'+ v.qty +'">' +
                             '</center></td>' +
                             '<input type="hidden" name="id" style="width:60px" value="'+ v.bill_no +'">' +
                             '<input type="hidden" name="items_id" style="width:60px" value="'+ v.items_id +'">' +
@@ -168,18 +168,19 @@ $(function(){
         data.bill_no = $('#txtId').val();
         var products = [];
         data.products = products;
-
         var $tr_items = $('#tbl_items_approve > tbody > tr');
         var checkQty = true;
         $tr_items.each(function(tr){
             var $this = $(this);
-            var pay = $this.find('input[name="pay"]').val();
-            var qty = $this.find('input[name="qty"]').val();
+            var qty = parseInt($this.find('input[name="qty"]').val());
+            var pay = parseInt($this.find('input[name="pay"]').val());
             var items_id = $this.find('input[name="items_id"]').val();
-            if (pay < 0 || pay > qty ) {
+
+
+            if ((pay < 0) || (pay > qty) ) {
                 checkQty = false;
             }
-            if (pay && pay >= 0) {
+            else if (pay && pay >= 0) {
                 var product = {};
                 product.items_id = items_id;
                 product.qty = qty;
@@ -187,13 +188,15 @@ $(function(){
                 products.push(product);
             }
         });
+        console.log(checkQty);
+        console.log(products);
 
         if(!checkQty) {
             alert("มีจำนวนรายการจ่ายที่น้อยกว่า 0 หรือ มีจำนวนจ่ายวัสดุเกินการเบิก");
         }
         else
         {
-            if (confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
+            if(confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
                 $.ajax({
                     type: "POST",
                     url: "/admin/save_approve_material",

@@ -170,7 +170,7 @@ module.exports = {
 
     getList_bills_admin_Detail: function (db,date_service,startpage) {
         var q = Q.defer();
-        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive,        '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,m.items_id,k.kind_name,m.qty,m.pay,u.unitname,u.id,d.depname FROM  bills b '+
@@ -196,7 +196,7 @@ module.exports = {
 
     getList_bills_admin_not_approve_Detail: function (db,startpage) {
         var q = Q.defer();
-        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive,        '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,m.items_id,k.kind_name,m.qty,m.pay,u.unitname,u.id,d.depname FROM  bills b '+
@@ -221,7 +221,7 @@ module.exports = {
 
     getList_bills_admin_approve_Detail: function (db,startpage) {
         var q = Q.defer();
-        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,d.depname FROM  bills b '+
@@ -242,7 +242,7 @@ module.exports = {
 
     getSearch_bill: function(db,data){
         var q = Q.defer();
-        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,d.depname FROM  bills b '+
@@ -266,7 +266,7 @@ module.exports = {
 
     getSearch_date_bill: function(db,data){
         var q = Q.defer();
-        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,d.depname FROM  bills b '+
@@ -289,7 +289,7 @@ module.exports = {
 
     getSearch_date_bill_payable: function(db,data){
         var q = Q.defer();
-        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
         'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
         'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
         'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,(m.qty-m.pay) as pab,d.depname FROM  bills b '+
@@ -315,7 +315,7 @@ module.exports = {
 
     getShow_bill: function(db,id){
         var q = Q.defer();
-        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
         'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
         'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
         'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,t.kind_name,m.qty,u.unitname,IF(m.pay IS NULL,"0",m.pay) AS pay,' +
@@ -338,7 +338,7 @@ module.exports = {
 
     getReport_bills: function(db,id){
         var q = Q.defer();
-        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,t.kind_name,m.qty,u.unitname,IF(m.pay IS NULL,"0",m.pay) AS pay,' +
@@ -361,7 +361,7 @@ module.exports = {
 
     getShow_items_approve: function (db,bill_no) {
         var q = Q.defer();
-        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'b.user_order,m.items_id,k.kind_name,m.qty,m.pay,u.unitname FROM  bills b '+
             'INNER JOIN stock_material m ON m.bill_no=b.bill_no '+
             'LEFT JOIN stock_tb_kind_type k ON k.id=m.items_id  '+

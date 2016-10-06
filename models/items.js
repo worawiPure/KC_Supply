@@ -86,7 +86,7 @@ module.exports = {
 
     getList_bills_Detail: function (db,username,startpage) {
         var q = Q.defer();
-        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
                     'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
                     'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
                     'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order FROM  bills b '+
@@ -106,7 +106,7 @@ module.exports = {
 
     getSearch_bill: function(db,data){
         var q = Q.defer();
-        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order FROM  bills b '+
@@ -129,7 +129,7 @@ module.exports = {
 
     getSearch_date_bill: function(db,data){
         var q = Q.defer();
-        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order FROM  bills b '+
@@ -151,7 +151,7 @@ module.exports = {
 
     getShow_bill: function(db,id){
         var q = Q.defer();
-        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
         'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
         'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
         'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,t.kind_name,m.qty,u.unitname,IF(m.pay IS NULL,"0",m.pay) AS pay,' +
@@ -173,7 +173,7 @@ module.exports = {
 
     getReport_bills: function(db,id){
         var q = Q.defer();
-        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,t.kind_name,m.qty,u.unitname,IF(m.pay IS NULL,"0",m.pay) AS pay,' +
@@ -212,7 +212,7 @@ module.exports = {
 
     getList_bills_receive_Detail: function (db,username,today,startpage) {
     var q = Q.defer();
-    var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,6),b.bill_no) as bill,b.bill_no, '+
+    var sql = 'SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
         'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
         'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
         'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order FROM  bills b '+

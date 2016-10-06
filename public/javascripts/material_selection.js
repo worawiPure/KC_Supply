@@ -1,5 +1,6 @@
 $(function(){
     var products = [];
+    var products_save = [];
     var setTable_show_items = function(){
         var $tbl_show = $('#tbl_basket > tbody');
         $tbl_show.empty();
@@ -11,7 +12,7 @@ $(function(){
                 '<td> ' + i + ' </td>' +
                 '<td> ' + v.name + ' </td>' +
                 '<td> '+
-                '<input data-name="txt_number" type="number" name="id" style="width:60px" value="'+  v.qty  +'"> '+
+                '<input data-name="txt_number" type="number" name="qty" style="width:60px" value="'+  v.qty  +'"> '+
                 '<td> ' + v.unit + ' </td>' +
                 '<td> '+
                 '<a class="btn btn-danger btn-sm" href="#" data-action="remove_items" data-id="'+ x +'" data-toggle="tooltip" data-placement="top" title="ลบรายการนี้" > '+
@@ -139,11 +140,11 @@ $(function(){
                 products.push(product);
             }
         });
+          console.log(products);
           if(!checkQty) {
               alert("มีจำนวนรายการที่น้อยกว่า 0");
           }
-        console.log(products);
-        // show table;
+
         $('#mdlSelect_items').modal('hide')
         setTable_show_items();
         $('#btnSave_items').fadeIn();
@@ -167,33 +168,60 @@ $(function(){
             }
     });
 
-    $('#btnSave_items').on('click',function(e) {
+    $('button[data-name="btnSave_items"]').on('click', function(e){
         e.preventDefault();
-                var data = {};
-                data.date_receive = $('#txtDate_receive').val();
-                data.products = products;
-                console.log(data.products, data.date_receive);
-                if (!data.date_receive) {
-                    alert('กรอกวันที่ต้องการับวัสดุด้วยครับ !!');
-                } else if (data.date_receive < moment().format('DD/MM/YYYY')) {
-                    alert('วันที่ต้องการับวัสดุเป็นหลังวันทำรายการ กรุณาเช็ควันที่รับวัสดุ !!');
-                } else {
-                    if (confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
-                        $.ajax({
-                            type: "POST",
-                            url: "/save_material",
-                            contentType: 'application/json',
-                            data: JSON.stringify({data: data})
-                        })
-                            .success(function () {
-                                alert('บันทึกข้อมูลเรียบร้อยแล้ว');
-                                window.location.href = "/material_selection";
-                            })
-                            .error(function (xhr, status, err) {
-                                alert(err);
-                            })
-                    }
-                }
+        products_save = [];
+        var $tr_save = $('#tbl_basket > tbody > tr');
+        var checkQty = true;
+        $tr_save.each(function(tr){
+            var $this = $(this);
+            var id = $this.find('input[name="id"]').val();
+            var name = $this.find('input[name="name"]').val();
+            var qty = $this.find('input[name="qty"]').val();
+            var unit = $this.find('input[name="unit"]').val();
+
+            if (qty < 0) {
+                checkQty = false;
+            }
+            if (qty && qty >= 0) {
+                var product_save = {};
+                product_save.id = id;
+                product_save.qty = qty;
+                product_save.name = name;
+                product_save.unit = unit;
+                products_save.push(product_save);
+            }
+        });
+
+        console.log(products_save);
+        var data = {};
+        data.date_receive = $('#txtDate_receive').val();
+        data.products_save = products_save;
+        console.log(data.products_save);
+        if (!data.date_receive) {
+            alert('กรอกวันที่ต้องการับวัสดุด้วยครับ !!');
+        } else if (data.date_receive < moment().format('DD/MM/YYYY')) {
+            alert('วันที่ต้องการับวัสดุเป็นหลังวันทำรายการ กรุณาเช็ควันที่รับวัสดุ !!');
+        } else if (!checkQty) {
+            alert("มีจำนวนรายการที่น้อยกว่า 0");
+        } else {
+            if (confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
+                $.ajax({
+                    type: "POST",
+                    url: "/save_material",
+                    contentType: 'application/json',
+                    data: JSON.stringify({data: data})
+                })
+                    .success(function () {
+                        alert('บันทึกข้อมูลเรียบร้อยแล้ว');
+                        window.location.href = "/material_selection";
+                    })
+                    .error(function (xhr, status, err) {
+                        alert(err);
+                    })
+            }
+        }
     });
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 });

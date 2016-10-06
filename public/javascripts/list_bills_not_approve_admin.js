@@ -173,10 +173,11 @@ $(function(){
         var checkQty = true;
         $tr_items.each(function(tr){
             var $this = $(this);
-            var pay = $this.find('input[name="pay"]').val();
-            var qty = $this.find('input[name="qty"]').val();
+            var pay = parseInt($this.find('input[name="pay"]').val());
+            var qty = parseInt($this.find('input[name="qty"]').val());
             var items_id = $this.find('input[name="items_id"]').val();
-            if (pay < 0 || pay > qty ) {
+
+            if ((pay < 0) || (pay > qty) ) {
                 checkQty = false;
             }
             if (pay && pay >= 0) {

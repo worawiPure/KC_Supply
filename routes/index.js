@@ -60,16 +60,14 @@ router.post('/save_material', function(req,res){
     data.depcode = req.session.depcode;
     data.date_service =  moment().format('YYYY-MM-DD HH:mm:ss');
     data.date_receive = moment(req.body.data.date_receive, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    var products = req.body.data.products;
-    console.log(req.body.data.products);
+    var products_save = req.body.data.products_save;
+    console.log(req.body.data.products_save);
     var items = [];
-    console.log(data);
     if(data){
     show.getSave_bill(db,data)
         .then(function(bill_no){      // insert bill
             var _bill_no = bill_no[0];   // ได้ id
-
-            _.forEach(products, function (v) {
+            _.forEach(products_save, function (v) {
                 var obj = {};
                 obj.bill_no = _bill_no; // id
                 obj.items_id = v.id;
@@ -83,13 +81,12 @@ router.post('/save_material', function(req,res){
             res.send({ok: true});
         },
         function(err){
-            res.send({ok:false,msg:err})
+            res.send({ok:false,msg:err});
             console.log(err);
         });
     } else {
         res.send({ok:false,msg:'ข้อมูลไม่สมบูรณ์'})
     }
-
 });
 
 router.get('/list_bills', function(req, res, next) {
