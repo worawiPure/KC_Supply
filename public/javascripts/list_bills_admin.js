@@ -208,6 +208,7 @@ $(function(){
                         $('#mdlNew').modal('hide')
                         getList_bill();
                         window.open('/prints/report_approve_bills/'+ data.bill_no);
+                        location.href = ('/admin/list_bills_today_admin');
                     })
                     .error(function (xhr, status, err) {
                         alert(err);
