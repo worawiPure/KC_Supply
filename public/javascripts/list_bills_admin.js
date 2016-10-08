@@ -205,10 +205,12 @@ $(function(){
                 })
                     .success(function () {
                         alert('บันทึกข้อมูลเรียบร้อยแล้ว');
-                        $('#mdlNew').modal('hide')
+                        $('#mdlNew').modal('hide');
                         getList_bill();
-                        location.href = ('/admin/list_bills_today_admin');
                         window.open('/prints/report_approve_bills/'+ data.bill_no);
+                        setTimeout(function () {
+                            location.href = ('/admin/list_bills_today_admin');
+                        }, 4000);
                     })
                     .error(function (xhr, status, err) {
                         alert(err);
