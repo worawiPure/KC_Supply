@@ -162,6 +162,46 @@ $(function(){
          // do something...
     });
 
+    var getCountReceive = function() {
+        $.ajax({
+            method: 'POST',
+            url: '/admin/count_not_approve',
+            dataType: 'json'
+        })
+            .success(function (data) {
+                if (data.ok) {
+                    $('#dataTotal2').text(data.total);
+                } else {
+                    console.log(data.msg);
+                    alert('ไม่สามารถติดต่อฐานข้อมูลได้')
+                }
+            })
+            .error(function (xhr, status, err) {
+                console.log(err);
+                alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
+            })
+    };
+
+    var getCountReceive_today = function() {
+        $.ajax({
+            method: 'POST',
+            url: '/admin/count_approve_today',
+            dataType: 'json'
+        })
+            .success(function (data) {
+                if (data.ok) {
+                    $('#dataTotal').text(data.total);
+                } else {
+                    console.log(data.msg);
+                    alert('ไม่สามารถติดต่อฐานข้อมูลได้')
+                }
+            })
+            .error(function (xhr, status, err) {
+                console.log(err);
+                alert('กรุณาตรวจสอบการเชื่อมต่อกับแม่ข่าย')
+            })
+    };
+
     $('#btnAdd_approve').on('click',function(e) {
         e.preventDefault();
         var data = {};
@@ -205,11 +245,9 @@ $(function(){
                         alert('บันทึกข้อมูลเรียบร้อยแล้ว');
                         $('#mdlNew').modal('hide');
                         getList_bill();
+                        getCountReceive_today();
+                        getCountReceive();
                         window.open('/prints/report_approve_bills/'+ data.bill_no);
-                        setTimeout(function () {
-                            location.href = ('/admin/list_bills_not_approve');
-                        }, 4000);
-
                     })
                     .error(function (xhr, status, err) {
                         alert(err);
