@@ -207,8 +207,8 @@ $(function(){
                         alert('บันทึกข้อมูลเรียบร้อยแล้ว');
                         $('#mdlNew').modal('hide')
                         getList_bill();
-                        window.open('/prints/report_approve_bills/'+ data.bill_no);
                         location.href = ('/admin/list_bills_today_admin');
+                        window.open('/prints/report_approve_bills/'+ data.bill_no);
                     })
                     .error(function (xhr, status, err) {
                         alert(err);
