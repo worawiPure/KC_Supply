@@ -408,10 +408,6 @@ router.get('/print_bill/:bill_no', function (req, res, next) {
                 var html = fs.readFileSync(destPath + '/report_bills.html', 'utf8')
                 var options = {
                     format: 'A4',
-                    header: {
-                        height: "20mm",
-                        contents: '<div style="text-align: center"><h2>รายการเบิกวัสดุ</h2></div>'
-                    },
                     footer: {
                         height: "15mm",
                         contents: '<span style="color: #444;"><small>Printed: ' + new Date() + '</small></span>'

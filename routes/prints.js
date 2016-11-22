@@ -52,10 +52,6 @@ router.get('/report_approve_bills/:bill_no', function (req, res, next) {
                 var html = fs.readFileSync(destPath + '/report_bills.html', 'utf8');
                 var options = {
                     format: 'A4',
-                    header: {
-                        height: "10mm",
-                        contents: '<div style="text-align: center"><h2>รายการเบิกวัสดุ</h2></div>'
-                    },
                     footer: {
                         height: "10mm",
                         contents: '<span style="color: #444;"><small>Printed: ' + new Date() + '</small></span>'
