@@ -247,7 +247,7 @@ $(function(){
                         getList_bill();
                         getCountReceive_today();
                         getCountReceive();
-                        window.open('/prints/report_approve_bills/'+ data.bill_no);
+                        //window.open('/prints/report_approve_bills/'+ data.bill_no);
                     })
                     .error(function (xhr, status, err) {
                         alert(err);

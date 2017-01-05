@@ -354,6 +354,7 @@ router.get('/show_bill/:bill_no',function(req,res){
                 //console.log(rows);
                 _.forEach(rows,function(v){
                     var product = {};
+                    product.kind_category_id = v.kind_category_id;
                     product.kind_name = v.kind_name;
                     product.qty = v.qty;
                     product.unitname = v.unitname;
@@ -370,66 +371,125 @@ router.get('/show_bill/:bill_no',function(req,res){
     }
 });
 
-router.get('/print_bill/:bill_no', function (req, res, next) {
+router.get('/print_bill/:bill_no/:category_id', function (req, res, next) {
     var db = req.db;
     var json = {};
     var id = req.params.bill_no;
+    var category_id = req.params.category_id;
     var products = [];
-    show.getReport_bills(db,id)
-        .then(function(rows) {
-            console.log(id);
-            json.detail = rows[0];
-            _.forEach(rows,function(v){
-                var product = {};
-                product.kind_name = v.kind_name;
-                product.qty = v.qty;
-                product.unitname = v.unitname;
-                product.pay = v.pay;
-                product.pab = v.pab;
-                products.push(product);
-            });
-            json.products = products;
-            fse.ensureDirSync('./templates/html');
-            fse.ensureDirSync('./templates/pdf');
-            var destPath = './templates/html/' + moment().format('x');
-            fse.ensureDirSync(destPath);
-            json.img = './img/sign.png';
-            // Create pdf
-            gulp.task('html', function (cb) {
-                return gulp.src('./templates/report_bills.jade')
-                    .pipe(data(function () {
-                        return json;
-                    }))
-                    .pipe(jade())
-                    .pipe(gulp.dest(destPath));
-                cb();
-            });
-            gulp.task('pdf', ['html'], function () {
-                var html = fs.readFileSync(destPath + '/report_bills.html', 'utf8')
-                var options = {
-                    format: 'A4',
-                    footer: {
-                        height: "15mm",
-                        contents: '<span style="color: #444;"><small>Printed: ' + new Date() + '</small></span>'
-                    }
-                };
-                var pdfName = './templates/pdf/KC_Supply-' + moment().format('x') + '.pdf';
-                pdf.create(html, options).toFile(pdfName, function (err, resp) {
-                    if (err) {
-                        res.send({ok: false, msg: err});
-                    } else {
-                        res.download(pdfName, function () {
-                            rimraf.sync(destPath);
-                            fse.removeSync(pdfName);
-                        });
-                    }
+    if (category_id == 1) {
+        show.getReport_bills_tool(db,id)
+            .then(function(rows) {
+                console.log(id);
+                json.detail = rows[0];
+                _.forEach(rows, function (v) {
+                    var product = {};
+                    product.kind_name = v.kind_name;
+                    product.qty = v.qty;
+                    product.unitname = v.unitname;
+                    product.pay = v.pay;
+                    product.pab = v.pab;
+                    products.push(product);
                 });
-            });
-            // Convert html to pdf
-            gulp.start('pdf');
-        },function(err){
-            res.send({ok: false, msg: err});
-        })
+                json.products = products;
+                fse.ensureDirSync('./templates/html');
+                fse.ensureDirSync('./templates/pdf');
+                var destPath = './templates/html/' + moment().format('x');
+                fse.ensureDirSync(destPath);
+                json.img = './img/sign.png';
+                // Create pdf
+                gulp.task('html', function (cb) {
+                    return gulp.src('./templates/report_bills.jade')
+                        .pipe(data(function () {
+                            return json;
+                        }))
+                        .pipe(jade())
+                        .pipe(gulp.dest(destPath));
+                    cb();
+                });
+                gulp.task('pdf', ['html'], function () {
+                    var html = fs.readFileSync(destPath + '/report_bills.html', 'utf8')
+                    var options = {
+                        format: 'A4',
+                        footer: {
+                            height: "15mm",
+                            contents: '<span style="color: #444;"><small>Printed: ' + new Date() + '</small></span>'
+                        }
+                    };
+                    var pdfName = './templates/pdf/KC_Supply-' + moment().format('x') + '.pdf';
+                    pdf.create(html, options).toFile(pdfName, function (err, resp) {
+                        if (err) {
+                            res.send({ok: false, msg: err});
+                        } else {
+                            res.download(pdfName, function () {
+                                rimraf.sync(destPath);
+                                fse.removeSync(pdfName);
+                            });
+                        }
+                    });
+                });
+                // Convert html to pdf
+                gulp.start('pdf');
+             },function(err){
+                res.send({ok: false, msg: err});
+            })}
+    if (category_id == 2){
+        show.getReport_bills_fabric(db,id)
+            .then(function(rows) {
+                console.log(id);
+                json.detail = rows[0];
+                _.forEach(rows, function (v) {
+                    var product = {};
+                    product.kind_name = v.kind_name;
+                    product.qty = v.qty;
+                    product.unitname = v.unitname;
+                    product.pay = v.pay;
+                    product.pab = v.pab;
+                    products.push(product);
+                });
+                json.products = products;
+                fse.ensureDirSync('./templates/html');
+                fse.ensureDirSync('./templates/pdf');
+                var destPath = './templates/html/' + moment().format('x');
+                fse.ensureDirSync(destPath);
+                json.img = './img/sign.png';
+                // Create pdf
+                gulp.task('html', function (cb) {
+                    return gulp.src('./templates/report_bills.jade')
+                        .pipe(data(function () {
+                            return json;
+                        }))
+                        .pipe(jade())
+                        .pipe(gulp.dest(destPath));
+                    cb();
+                });
+                gulp.task('pdf', ['html'], function () {
+                    var html = fs.readFileSync(destPath + '/report_bills.html', 'utf8')
+                    var options = {
+                        format: 'A4',
+                        footer: {
+                            height: "15mm",
+                            contents: '<span style="color: #444;"><small>Printed: ' + new Date() + '</small></span>'
+                        }
+                    };
+                    var pdfName = './templates/pdf/KC_Supply-' + moment().format('x') + '.pdf';
+                    pdf.create(html, options).toFile(pdfName, function (err, resp) {
+                        if (err) {
+                            res.send({ok: false, msg: err});
+                        } else {
+                            res.download(pdfName, function () {
+                                rimraf.sync(destPath);
+                                fse.removeSync(pdfName);
+                            });
+                        }
+                    });
+                });
+                // Convert html to pdf
+                gulp.start('pdf');
+            },function(err){
+                res.send({ok: false, msg: err});
+            })
+    }
     // ensure directory
 });
 

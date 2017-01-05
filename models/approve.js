@@ -319,11 +319,12 @@ module.exports = {
         'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
         'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
         'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,t.kind_name,m.qty,u.unitname,IF(m.pay IS NULL,"0",m.pay) AS pay,' +
-        '(m.qty-m.pay) AS pab,d.depname  FROM  bills b '+
+        '(m.qty-m.pay) AS pab,d.depname,c.kind_category,c.id as kind_category_id  FROM  bills b '+
         'INNER JOIN stock_material m ON m.bill_no=b.bill_no '+
         'LEFT JOIN stock_tb_kind_type t ON t.id=m.items_id   '+
         'LEFT JOIN stock_tb_unit u ON u.id=t.unitid '+
         'LEFT JOIN tb_department d ON d.depcode=b.depcode '+
+        'LEFT JOIN stock_tb_kind_category c ON c.id=t.kind_category_id     '+
         'WHERE b.bill_no = ? ';
         db.raw(sql,[id])
             .then(function(rows){
@@ -336,24 +337,51 @@ module.exports = {
         return q.promise;
     },
 
-    getReport_bills: function(db,id){
+    getReport_bills_tool: function(db,id){
         var q = Q.defer();
         var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
             'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
             'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
             'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,t.kind_name,m.qty,u.unitname,IF(m.pay IS NULL,"0",m.pay) AS pay,' +
-            '(m.qty-m.pay) AS pab,p.depname  FROM  bills b '+
+            '(m.qty-m.pay) AS pab,p.depname,c.kind_category,c.id as kind_category_id  FROM  bills b '+
             'INNER JOIN stock_material m ON m.bill_no=b.bill_no '+
             'LEFT JOIN stock_tb_kind_type t ON t.id=m.items_id   '+
             'LEFT JOIN stock_tb_unit u ON u.id=t.unitid '+
             'LEFT JOIN tb_department p ON p.depcode=b.depcode '+
-            'WHERE b.bill_no = ? ';
+            'LEFT JOIN stock_tb_kind_category c ON c.id=t.kind_category_id '+
+            'WHERE b.bill_no = ? ' +
+            'AND t.kind_category_id IN ("1","2","3","4")';
         db.raw(sql,[id])
             .then(function(rows){
                 q.resolve(rows[0])
             })
             .catch(function(err){
-                console.log(err)
+                console.log(err);
+                q.reject(err)
+            });
+        return q.promise;
+    },
+
+    getReport_bills_fabric: function(db,id){
+        var q = Q.defer();
+        var sql =   ' SELECT concat("KC",SUBSTRING(b.service_date,1,5),b.bill_no) as bill,b.bill_no, '+
+            'concat(DATE_FORMAT(DATE_ADD(b.service_date,INTERVAL 543 YEAR),"%Y-%m-%d"),"/",SUBSTRING(b.service_date,11,11)) as date_service, '+
+            'DATE_FORMAT(DATE_ADD(b.receive_date,INTERVAL 543 YEAR),"%Y-%m-%d") as date_receive, '+
+            'IF(b.status_pay is NULL,"ยังไม่อนุมัติ","อนุมัติ") as pay_status,b.user_order,t.kind_name,m.qty,u.unitname,IF(m.pay IS NULL,"0",m.pay) AS pay,' +
+            '(m.qty-m.pay) AS pab,p.depname,c.kind_category,c.id as kind_category_id  FROM  bills b '+
+            'INNER JOIN stock_material m ON m.bill_no=b.bill_no '+
+            'LEFT JOIN stock_tb_kind_type t ON t.id=m.items_id   '+
+            'LEFT JOIN stock_tb_unit u ON u.id=t.unitid '+
+            'LEFT JOIN tb_department p ON p.depcode=b.depcode '+
+            'LEFT JOIN stock_tb_kind_category c ON c.id=t.kind_category_id '+
+            'WHERE b.bill_no = ? ' +
+            'AND t.kind_category_id = 5 ';
+        db.raw(sql,[id])
+            .then(function(rows){
+                q.resolve(rows[0])
+            })
+            .catch(function(err){
+                console.log(err);
                 q.reject(err)
             });
         return q.promise;
