@@ -194,14 +194,15 @@ $(function(){
         });
 
         console.log(products_save);
+
         var data = {};
         data.date_receive = $('#txtDate_receive').val();
         data.products_save = products_save;
         console.log(data.products_save);
         if (!data.date_receive) {
             alert('กรอกวันที่ต้องการับวัสดุด้วยครับ !!');
-        } else if (data.date_receive < moment().format('DD/MM/YYYY')) {
-            alert('วันที่ต้องการับวัสดุเป็นหลังวันทำรายการ กรุณาเช็ควันที่รับวัสดุ !!');
+        } else if (moment(data.date_receive,'DD/MM/YYYY').format('YYYY-MM-DD') < moment().format('YYYY-MM-DD') ) {
+            alert('วันที่ต้องการรับวัสดุเป็นหลังวันทำรายการ กรุณาเช็ควันที่รับวัสดุ !!');
         } else if (!checkQty) {
             alert("มีจำนวนรายการที่น้อยกว่า 0");
         } else {
