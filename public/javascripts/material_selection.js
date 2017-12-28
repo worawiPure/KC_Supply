@@ -173,6 +173,7 @@ $(function(){
         products_save = [];
         var $tr_save = $('#tbl_basket > tbody > tr');
         var checkQty = true;
+        var checkItems = true;
         $tr_save.each(function(tr){
             var $this = $(this);
             var id = $this.find('input[name="id"]').val();
@@ -205,6 +206,8 @@ $(function(){
             alert('วันที่ต้องการรับวัสดุเป็นหลังวันทำรายการ กรุณาเช็ควันที่รับวัสดุ !!');
         } else if (!checkQty) {
             alert("มีจำนวนรายการที่น้อยกว่า 0");
+        } else if ($tr_save.length <= 0) {
+            alert("ยังไม่มีรายการเบิกครับ !!");
         } else {
             if (confirm('คุณต้องการบันทึกรายการนี้ ใช่หรือไม่')) {
                 $.ajax({
